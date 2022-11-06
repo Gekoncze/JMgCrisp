@@ -3,10 +3,11 @@ package cz.mg.crisp.ui;
 import cz.mg.annotations.classes.Utility;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
+import cz.mg.crisp.actions.CameraMoveAction;
+import cz.mg.crisp.actions.FragmentMoveAction;
 import cz.mg.crisp.entity.GlobalPoint;
 import cz.mg.crisp.entity.Scene;
 import cz.mg.crisp.event.*;
-import cz.mg.crisp.actions.CameraMoveAction;
 import cz.mg.crisp.graphics.SceneRenderer;
 import cz.mg.crisp.services.CoordinateService;
 import cz.mg.crisp.services.SelectionService;
@@ -27,6 +28,7 @@ public @Utility class ScenePanel extends JPanel {
 
     private @Optional Scene scene;
     private @Optional CameraMoveAction cameraMoveAction;
+    private @Optional FragmentMoveAction fragmentMoveAction;
 
     public ScenePanel() {
         addMouseListener(new UserMousePressedListener(this::onMousePressed));
@@ -51,10 +53,13 @@ public @Utility class ScenePanel extends JPanel {
     private void onMousePressed(@Mandatory MouseEvent event) {
         if (scene != null) {
             if (event.getButton() == MouseEvent.BUTTON1) {
-                GlobalPoint point = coordinateService.convert(event.getPoint());
+                GlobalPoint mouse = coordinateService.convert(event.getPoint());
+                boolean incremental = event.isControlDown();
 
-                if (!selectionService.select(point, scene, event.isControlDown())) {
-                    cameraMoveAction = new CameraMoveAction(scene.getCamera(), point);
+                if (selectionService.isSelectedAt(mouse, scene) && !incremental) {
+                    fragmentMoveAction = new FragmentMoveAction(scene, mouse);
+                } else if (!selectionService.select(mouse, scene, incremental)) {
+                    cameraMoveAction = new CameraMoveAction(scene.getCamera(), mouse);
                 }
 
                 updateCursor(event);
@@ -75,8 +80,15 @@ public @Utility class ScenePanel extends JPanel {
     }
 
     private void onMouseDragged(@Mandatory MouseEvent event) {
+        GlobalPoint mouse = coordinateService.convert(event.getPoint());
+
         if (cameraMoveAction != null) {
-            cameraMoveAction.onMouseDragged(coordinateService.convert(event.getPoint()));
+            cameraMoveAction.onMouseDragged(mouse);
+            repaint();
+        }
+
+        if (fragmentMoveAction != null) {
+            fragmentMoveAction.onMouseDragged(mouse);
             repaint();
         }
     }
@@ -94,7 +106,8 @@ public @Utility class ScenePanel extends JPanel {
 
     private void updateCursor(@Mandatory MouseEvent event) {
         if (scene != null) {
-            if (selectionService.isInsideSelected(coordinateService.convert(event.getPoint()), scene)) {
+            GlobalPoint mouse = coordinateService.convert(event.getPoint());
+            if (selectionService.isSelectedAt(mouse, scene)) {
                 setCursor(new Cursor(Cursor.MOVE_CURSOR));
             } else {
                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));

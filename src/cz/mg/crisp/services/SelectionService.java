@@ -24,7 +24,7 @@ public @Service class SelectionService {
     private SelectionService() {
     }
 
-    public boolean isInsideSelected(@Mandatory GlobalPoint point, @Mandatory Scene scene) {
+    public boolean isSelectedAt(@Mandatory GlobalPoint point, @Mandatory Scene scene) {
         LocalPoint local = coordinateService.globalToLocal(scene.getCamera(), point);
 
         for (Fragment fragment : scene.getFragments()) {

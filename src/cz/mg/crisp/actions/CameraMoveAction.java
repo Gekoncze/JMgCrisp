@@ -9,8 +9,8 @@ public @Utility class CameraMoveAction {
     private final CoordinateService coordinateService = CoordinateService.getInstance();
 
     private final @Mandatory Camera camera;
-    private final GlobalPoint mouseStart;
-    private final LocalPoint cameraStart;
+    private final @Mandatory GlobalPoint mouseStart;
+    private final @Mandatory LocalPoint cameraStart;
 
     public CameraMoveAction(@Mandatory Camera camera, @Mandatory GlobalPoint mouse) {
         this.camera = camera;
