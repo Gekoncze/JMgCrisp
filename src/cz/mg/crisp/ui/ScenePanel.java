@@ -63,16 +63,21 @@ public @Utility class ScenePanel extends JPanel {
                 }
 
                 updateCursor(event);
+                repaint();
             }
         }
-        repaint();
     }
 
     private void onMouseReleased(@Mandatory MouseEvent event) {
         if (cameraMoveAction != null) {
             cameraMoveAction = null;
+            repaint();
         }
-        repaint();
+
+        if (fragmentMoveAction != null) {
+            fragmentMoveAction = null;
+            repaint();
+        }
     }
 
     private void onMouseMoved(@Mandatory MouseEvent event) {

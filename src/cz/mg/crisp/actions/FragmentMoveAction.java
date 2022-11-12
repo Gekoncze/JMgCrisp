@@ -6,9 +6,11 @@ import cz.mg.collections.map.Map;
 import cz.mg.collections.pair.ReadablePair;
 import cz.mg.crisp.entity.*;
 import cz.mg.crisp.services.CoordinateService;
+import cz.mg.crisp.services.ReferencePositionService;
 
 public @Utility class FragmentMoveAction {
     private final CoordinateService coordinateService = CoordinateService.getInstance();
+    private final ReferencePositionService referencePositionService = ReferencePositionService.getInstance();
 
     private final @Mandatory Scene scene;
     private final @Mandatory GlobalPoint mouseStart;
@@ -30,5 +32,6 @@ public @Utility class FragmentMoveAction {
         for (ReadablePair<Fragment, LocalPoint> pair : fragmentsStart) {
             pair.getKey().setPosition(LocalPoint.move(pair.getValue(), localDelta));
         }
+        referencePositionService.computePositionsForSelectedFragmentReferences(scene);
     }
 }

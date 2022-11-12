@@ -4,10 +4,7 @@ import cz.mg.annotations.classes.Service;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
 import cz.mg.c.CObject;
-import cz.mg.crisp.entity.Camera;
-import cz.mg.crisp.entity.Fragment;
-import cz.mg.crisp.entity.Reference;
-import cz.mg.crisp.entity.Scene;
+import cz.mg.crisp.entity.*;
 import cz.mg.crisp.other.FragmentFieldMetadata;
 import cz.mg.crisp.other.Metadata;
 import cz.mg.crisp.services.MetadataProvider;
@@ -33,6 +30,7 @@ public @Service class SceneRenderer {
     }
 
     private MetadataProvider metadataProvider;
+
     private final Metadata metadata = new Metadata();
 
     private SceneRenderer() {
@@ -112,11 +110,10 @@ public @Service class SceneRenderer {
 
     private void drawReference(@Mandatory Graphics2D g, @Mandatory Reference reference) {
         g.setColor(reference.isSelected() ? SELECTION_COLOR : REFERENCE_COLOR);
-        g.drawLine(
-            reference.getBegin().getX(),
-            reference.getBegin().getY(),
-            reference.getEnd().getX(),
-            reference.getEnd().getY()
-        );
+        drawLine(g, reference.getBegin(), reference.getEnd());
+    }
+
+    private void drawLine(@Mandatory Graphics2D g, @Mandatory LocalPoint p1, @Mandatory LocalPoint p2) {
+        g.drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY());
     }
 }

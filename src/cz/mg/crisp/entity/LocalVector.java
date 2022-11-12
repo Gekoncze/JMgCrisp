@@ -43,4 +43,12 @@ public @Entity class LocalVector {
     public static @Mandatory LocalVector inverse(@Mandatory LocalVector v) {
         return new LocalVector(-v.x, -v.y);
     }
+
+    public static @Mandatory LocalVector divide(@Mandatory LocalVector v, int value) {
+        return new LocalVector(v.x / value, v.y / value);
+    }
+
+    public static @Mandatory LocalVector multiply(@Mandatory LocalVector v, double value) {
+        return new LocalVector((int)(v.x * value), (int)(v.y * value));
+    }
 }

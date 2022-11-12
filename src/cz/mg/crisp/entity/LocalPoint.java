@@ -47,4 +47,8 @@ public @Entity class LocalPoint {
     public static LocalPoint move(@Mandatory LocalPoint p, @Mandatory LocalVector v) {
         return new LocalPoint(p.x + v.getX(), p.y + v.getY());
     }
+
+    public static LocalPoint center(@Mandatory LocalPoint a, @Mandatory LocalPoint b) {
+        return new LocalPoint((a.x + b.x) / 2, (a.y + b.y) / 2);
+    }
 }

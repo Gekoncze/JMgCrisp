@@ -1,0 +1,150 @@
+public @Optional LocalPoint[] collision(@Mandatory Line l1, @Mandatory Line l2) {
+        LocalPoint a1 = l1.getBegin();
+        LocalPoint b1 = l1.getEnd();
+        LocalPoint a2 = l2.getBegin();
+        LocalPoint b2 = l2.getEnd();
+        LocalVector v1 = LocalPoint.minus(b1, a1);
+        LocalVector v2 = LocalPoint.minus(b2, a2);
+        double a = a1.getX();
+        double b = a1.getY();
+        double e = a2.getX();
+        double f = a2.getY();
+        double i = v1.getX();
+        double j = v1.getY();
+        double k = v2.getX();
+        double l = v2.getY();
+        double vTop = f*i - b*i - j*e + j*a;
+        double vBot = j*k - l*i;
+        double uTop = f*k + l*a - l*e - b*k;
+        double uBot = j*k - l*i;
+        if (vBot == 0 || uBot == 0) return null;
+        double v = vTop / vBot;
+        double u = uTop / uBot;
+
+        if (v >= 0 && v <= 1 && u >= 0 && u <= 1) {
+            return new LocalPoint[] {
+                LocalPoint.move(a1, LocalVector.multiply(v1, u)),
+                LocalPoint.move(a2, LocalVector.multiply(v2, v))
+            };
+        } else {
+            return null;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private void drawDebug(@Mandatory Graphics2D g, @Mandatory Reference reference) {
+
+        Line c2c = new Line(
+            fragmentPositionService.getCenter(reference.getSource()),
+            fragmentPositionService.getCenter(reference.getTarget())
+        );
+
+        g.setColor(Color.BLUE);
+        drawLine(g, c2c.getBegin(), c2c.getEnd());
+        g.setColor(Color.RED);
+
+        /*drawLine(g,
+            fragmentPositionService.getTopLeft(reference.getSource()),
+            fragmentPositionService.getTopLeft(reference.getTarget())
+        );
+
+        drawLine(g,
+            fragmentPositionService.getTopRight(reference.getSource()),
+            fragmentPositionService.getTopRight(reference.getTarget())
+        );
+
+        drawLine(g,
+            fragmentPositionService.getBottomLeft(reference.getSource()),
+            fragmentPositionService.getBottomLeft(reference.getTarget())
+        );
+
+        drawLine(g,
+            fragmentPositionService.getBottomRight(reference.getSource()),
+            fragmentPositionService.getBottomRight(reference.getTarget())
+        );*/
+
+        Line sourceTop = new Line(
+            fragmentPositionService.getTopLeft(reference.getSource()),
+            fragmentPositionService.getTopRight(reference.getSource())
+        );
+
+        Line sourceBottom = new Line(
+            fragmentPositionService.getBottomLeft(reference.getSource()),
+            fragmentPositionService.getBottomRight(reference.getSource())
+        );
+
+        Line sourceLeft = new Line(
+            fragmentPositionService.getTopLeft(reference.getSource()),
+            fragmentPositionService.getBottomLeft(reference.getSource())
+        );
+
+        Line sourceRight = new Line(
+            fragmentPositionService.getTopRight(reference.getSource()),
+            fragmentPositionService.getBottomRight(reference.getSource())
+        );
+
+        drawCollision(g, c2c, sourceTop);
+        drawCollision(g, c2c, sourceBottom);
+        drawCollision(g, c2c, sourceLeft);
+        drawCollision(g, c2c, sourceRight);
+
+        Line targetTop = new Line(
+            fragmentPositionService.getTopLeft(reference.getTarget()),
+            fragmentPositionService.getTopRight(reference.getTarget())
+        );
+
+        Line targetBottom = new Line(
+            fragmentPositionService.getBottomLeft(reference.getTarget()),
+            fragmentPositionService.getBottomRight(reference.getTarget())
+        );
+
+        Line targetLeft = new Line(
+            fragmentPositionService.getTopLeft(reference.getTarget()),
+            fragmentPositionService.getBottomLeft(reference.getTarget())
+        );
+
+        Line targetRight = new Line(
+            fragmentPositionService.getTopRight(reference.getTarget()),
+            fragmentPositionService.getBottomRight(reference.getTarget())
+        );
+
+        drawCollision(g, c2c, targetTop);
+        drawCollision(g, c2c, targetBottom);
+        drawCollision(g, c2c, targetLeft);
+        drawCollision(g, c2c, targetRight);
+    }
+
+    private void drawCollision(@Mandatory Graphics2D g, @Mandatory Line l1, @Mandatory Line l2) {
+        LocalPoint[] pps = referencePositionService.collision(l1, l2);
+        if (pps != null) {
+            drawLine(g, l2);
+            g.setColor(Color.ORANGE);
+            drawPoint(g, pps[0]);
+            g.setColor(Color.PINK);
+            drawPoint(g, pps[1]);
+        }
+        g.setColor(Color.RED);
+    }
+
+    private void drawLine(@Mandatory Graphics2D g, @Mandatory Line line) {
+        drawLine(g, line.getBegin(), line.getEnd());
+    }
+
+    private void drawPoint(@Mandatory Graphics2D g, @Mandatory LocalPoint point) {
+        int x = point.getX() - 2;
+        int y = point.getY() - 2;
+        int w = 4;
+        int h = 4;
+        g.fillOval(x, y, w, h);
+    }
