@@ -51,4 +51,15 @@ public @Entity class LocalPoint {
     public static LocalPoint center(@Mandatory LocalPoint a, @Mandatory LocalPoint b) {
         return new LocalPoint((a.x + b.x) / 2, (a.y + b.y) / 2);
     }
+
+    public static LocalPoint combine(@Mandatory LocalPoint a, @Mandatory LocalPoint b, double t) {
+        return new LocalPoint(
+            combine(a.x, b.x, t),
+            combine(a.y, b.y, t)
+        );
+    }
+
+    private static int combine(int a, int b, double t) {
+        return (int) (a * (1.0 - t) + b * t);
+    }
 }

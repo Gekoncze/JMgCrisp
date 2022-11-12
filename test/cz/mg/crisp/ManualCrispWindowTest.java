@@ -43,11 +43,15 @@ public @Test class ManualCrispWindowTest {
         reference.setSource(firstFragment);
         reference.setTarget(secondFragment);
         reference.setSelected(false);
+        reference.setBegin(new LocalPoint());
+        reference.setEnd(new LocalPoint());
 
         Reference reference2 = new Reference();
         reference2.setSource(firstFragment);
         reference2.setTarget(secondFragment);
         reference2.setSelected(false);
+        reference2.setBegin(new LocalPoint());
+        reference2.setEnd(new LocalPoint());
 
         Scene scene = new Scene();
         scene.getFragments().addLast(firstFragment);
