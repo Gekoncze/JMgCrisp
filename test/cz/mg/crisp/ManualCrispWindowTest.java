@@ -5,6 +5,7 @@ import cz.mg.c.CLibrary;
 import cz.mg.c.CObject;
 import cz.mg.c.CPointer;
 import cz.mg.crisp.entity.*;
+import cz.mg.crisp.services.ReferencePositionService;
 import cz.mg.crisp.ui.CrispWindow;
 
 public @Test class ManualCrispWindowTest {
@@ -42,19 +43,21 @@ public @Test class ManualCrispWindowTest {
         reference.setSource(firstFragment);
         reference.setTarget(secondFragment);
         reference.setSelected(false);
-        reference.setBegin(new LocalPoint(
-            firstFragment.getPosition().getX() + firstFragment.getSize().getX(),
-            firstFragment.getPosition().getY() + firstFragment.getSize().getY() / 2
-        ));
-        reference.setEnd(new LocalPoint(
-            secondFragment.getPosition().getX(),
-            secondFragment.getPosition().getY() + secondFragment.getSize().getY() / 2
-        ));
+
+        Reference reference2 = new Reference();
+        reference2.setSource(firstFragment);
+        reference2.setTarget(secondFragment);
+        reference2.setSelected(false);
 
         Scene scene = new Scene();
         scene.getFragments().addLast(firstFragment);
         scene.getFragments().addLast(secondFragment);
         scene.getReferences().addLast(reference);
+        scene.getReferences().addLast(reference2);
+
+        firstFragment.setSelected(true);
+        ReferencePositionService.getInstance().computePositionsForSelectedFragmentReferences(scene);
+        firstFragment.setSelected(false);
 
         CrispWindow window = new CrispWindow();
         window.getScenePanel().setScene(scene);
