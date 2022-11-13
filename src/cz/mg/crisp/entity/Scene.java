@@ -2,6 +2,7 @@ package cz.mg.crisp.entity;
 
 import cz.mg.annotations.classes.Entity;
 import cz.mg.annotations.requirement.Required;
+import cz.mg.annotations.storage.Part;
 import cz.mg.collections.list.List;
 
 public @Entity class Scene {
@@ -12,7 +13,7 @@ public @Entity class Scene {
     public Scene() {
     }
 
-    @Required
+    @Required @Part
     public Camera getCamera() {
         return camera;
     }
@@ -21,7 +22,7 @@ public @Entity class Scene {
         this.camera = camera;
     }
 
-    @Required
+    @Required @Part
     public List<Fragment> getFragments() {
         return fragments;
     }
@@ -30,7 +31,7 @@ public @Entity class Scene {
         this.fragments = fragments;
     }
 
-    @Required
+    @Required @Part
     public List<Reference> getReferences() {
         return references;
     }

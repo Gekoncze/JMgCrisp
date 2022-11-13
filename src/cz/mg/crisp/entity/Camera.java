@@ -2,6 +2,8 @@ package cz.mg.crisp.entity;
 
 import cz.mg.annotations.classes.Entity;
 import cz.mg.annotations.requirement.Required;
+import cz.mg.annotations.storage.Part;
+import cz.mg.annotations.storage.Value;
 
 public @Entity class Camera {
     private LocalPoint position = new LocalPoint();
@@ -10,7 +12,7 @@ public @Entity class Camera {
     public Camera() {
     }
 
-    @Required
+    @Required @Part
     public LocalPoint getPosition() {
         return position;
     }
@@ -19,7 +21,7 @@ public @Entity class Camera {
         this.position = position;
     }
 
-    @Required
+    @Required @Value
     public Integer getZoom() {
         return zoom;
     }

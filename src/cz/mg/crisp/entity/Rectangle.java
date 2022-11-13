@@ -2,6 +2,7 @@ package cz.mg.crisp.entity;
 
 import cz.mg.annotations.classes.Entity;
 import cz.mg.annotations.requirement.Required;
+import cz.mg.annotations.storage.Part;
 
 public @Entity class Rectangle {
     private LocalPoint topLeft;
@@ -27,7 +28,7 @@ public @Entity class Rectangle {
         this.right = new Line(topRight, bottomRight);
     }
 
-    @Required
+    @Required @Part
     public LocalPoint getTopLeft() {
         return topLeft;
     }
@@ -36,7 +37,7 @@ public @Entity class Rectangle {
         this.topLeft = topLeft;
     }
 
-    @Required
+    @Required @Part
     public LocalPoint getTopRight() {
         return topRight;
     }
@@ -45,7 +46,7 @@ public @Entity class Rectangle {
         this.topRight = topRight;
     }
 
-    @Required
+    @Required @Part
     public LocalPoint getBottomLeft() {
         return bottomLeft;
     }
@@ -54,7 +55,7 @@ public @Entity class Rectangle {
         this.bottomLeft = bottomLeft;
     }
 
-    @Required
+    @Required @Part
     public LocalPoint getBottomRight() {
         return bottomRight;
     }
@@ -63,7 +64,7 @@ public @Entity class Rectangle {
         this.bottomRight = bottomRight;
     }
 
-    @Required
+    @Required @Part
     public Line getTop() {
         return top;
     }
@@ -72,7 +73,7 @@ public @Entity class Rectangle {
         this.top = top;
     }
 
-    @Required
+    @Required @Part
     public Line getBottom() {
         return bottom;
     }
@@ -81,7 +82,7 @@ public @Entity class Rectangle {
         this.bottom = bottom;
     }
 
-    @Required
+    @Required @Part
     public Line getLeft() {
         return left;
     }
@@ -90,7 +91,7 @@ public @Entity class Rectangle {
         this.left = left;
     }
 
-    @Required
+    @Required @Part
     public Line getRight() {
         return right;
     }

@@ -7,11 +7,14 @@ import cz.mg.crisp.actions.CameraMoveAction;
 import cz.mg.crisp.actions.FragmentMoveAction;
 import cz.mg.crisp.entity.GlobalPoint;
 import cz.mg.crisp.entity.Scene;
+import cz.mg.crisp.entity.metadata.SceneMetadata;
 import cz.mg.crisp.event.*;
 import cz.mg.crisp.graphics.SceneRenderer;
 import cz.mg.crisp.services.CoordinateService;
+import cz.mg.crisp.services.MetadataFactory;
 import cz.mg.crisp.services.SelectionService;
 import cz.mg.crisp.services.ZoomService;
+import cz.mg.crisp.services.cobject.CObjectMetadataFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,16 +24,20 @@ import java.awt.event.MouseWheelEvent;
 public @Utility class ScenePanel extends JPanel {
     private static final Color BACKGROUND_COLOR = Color.WHITE;
 
-    private final SceneRenderer sceneRenderer = SceneRenderer.getInstance();
-    private final CoordinateService coordinateService = CoordinateService.getInstance();
-    private final SelectionService selectionService = SelectionService.getInstance();
-    private final ZoomService zoomService = ZoomService.getInstance();
+    private final @Mandatory SceneRenderer sceneRenderer = SceneRenderer.getInstance();
+    private final @Mandatory CoordinateService coordinateService = CoordinateService.getInstance();
+    private final @Mandatory SelectionService selectionService = SelectionService.getInstance();
+    private final @Mandatory ZoomService zoomService = ZoomService.getInstance();
+    private final @Mandatory MetadataFactory metadataFactory = CObjectMetadataFactory.getInstance();
+
+    private final @Mandatory SceneMetadata sceneMetadata = new SceneMetadata();
 
     private @Optional Scene scene;
     private @Optional CameraMoveAction cameraMoveAction;
     private @Optional FragmentMoveAction fragmentMoveAction;
 
     public ScenePanel() {
+        sceneMetadata.setMetadataFactory(metadataFactory);
         addMouseListener(new UserMousePressedListener(this::onMousePressed));
         addMouseListener(new UserMouseReleasedListener(this::onMouseReleased));
         addMouseMotionListener(new UserMouseMovedListener(this::onMouseMoved));
@@ -130,7 +137,7 @@ public @Utility class ScenePanel extends JPanel {
         g.fillRect(0, 0, getWidth(), getHeight());
 
         if (scene != null) {
-            sceneRenderer.drawScene(g, scene);
+            sceneRenderer.drawScene(g, sceneMetadata, scene);
         }
     }
 }

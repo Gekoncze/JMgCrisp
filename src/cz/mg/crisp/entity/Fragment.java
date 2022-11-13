@@ -2,10 +2,12 @@ package cz.mg.crisp.entity;
 
 import cz.mg.annotations.classes.Entity;
 import cz.mg.annotations.requirement.Required;
-import cz.mg.c.CObject;
+import cz.mg.annotations.storage.Link;
+import cz.mg.annotations.storage.Part;
+import cz.mg.annotations.storage.Value;
 
 public @Entity class Fragment {
-    private CObject object;
+    private Object object;
     private LocalPoint position;
     private LocalVector size;
     private Boolean selected;
@@ -13,16 +15,16 @@ public @Entity class Fragment {
     public Fragment() {
     }
 
-    @Required
-    public CObject getObject() {
+    @Required @Link
+    public Object getObject() {
         return object;
     }
 
-    public void setObject(CObject object) {
+    public void setObject(Object object) {
         this.object = object;
     }
 
-    @Required
+    @Required @Part
     public LocalPoint getPosition() {
         return position;
     }
@@ -31,7 +33,7 @@ public @Entity class Fragment {
         this.position = position;
     }
 
-    @Required
+    @Required @Part
     public LocalVector getSize() {
         return size;
     }
@@ -40,7 +42,7 @@ public @Entity class Fragment {
         this.size = size;
     }
 
-    @Required
+    @Required @Value
     public Boolean isSelected() {
         return selected;
     }

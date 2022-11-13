@@ -2,6 +2,9 @@ package cz.mg.crisp.entity;
 
 import cz.mg.annotations.classes.Entity;
 import cz.mg.annotations.requirement.Required;
+import cz.mg.annotations.storage.Link;
+import cz.mg.annotations.storage.Part;
+import cz.mg.annotations.storage.Value;
 
 public @Entity class Reference {
     private Fragment source;
@@ -13,7 +16,7 @@ public @Entity class Reference {
     public Reference() {
     }
 
-    @Required
+    @Required @Link
     public Fragment getSource() {
         return source;
     }
@@ -22,7 +25,7 @@ public @Entity class Reference {
         this.source = source;
     }
 
-    @Required
+    @Required @Link
     public Fragment getTarget() {
         return target;
     }
@@ -31,7 +34,7 @@ public @Entity class Reference {
         this.target = target;
     }
 
-    @Required
+    @Required @Part
     public LocalPoint getBegin() {
         return begin;
     }
@@ -40,7 +43,7 @@ public @Entity class Reference {
         this.begin = begin;
     }
 
-    @Required
+    @Required @Part
     public LocalPoint getEnd() {
         return end;
     }
@@ -49,7 +52,7 @@ public @Entity class Reference {
         this.end = end;
     }
 
-    @Required
+    @Required @Value
     public Boolean isSelected() {
         return selected;
     }

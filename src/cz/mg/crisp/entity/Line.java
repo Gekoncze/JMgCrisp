@@ -2,6 +2,7 @@ package cz.mg.crisp.entity;
 
 import cz.mg.annotations.classes.Entity;
 import cz.mg.annotations.requirement.Required;
+import cz.mg.annotations.storage.Part;
 
 public @Entity class Line {
     private LocalPoint begin;
@@ -15,7 +16,7 @@ public @Entity class Line {
         this.end = end;
     }
 
-    @Required
+    @Required @Part
     public LocalPoint getBegin() {
         return begin;
     }
@@ -24,7 +25,7 @@ public @Entity class Line {
         this.begin = begin;
     }
 
-    @Required
+    @Required @Part
     public LocalPoint getEnd() {
         return end;
     }

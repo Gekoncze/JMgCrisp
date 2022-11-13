@@ -1,8 +1,9 @@
-package cz.mg.crisp.other;
+package cz.mg.crisp.entity.metadata;
 
 import cz.mg.annotations.classes.Entity;
 import cz.mg.annotations.requirement.Required;
-import cz.mg.c.CObject;
+import cz.mg.annotations.storage.Link;
+import cz.mg.annotations.storage.Value;
 
 import java.lang.reflect.Method;
 
@@ -14,7 +15,7 @@ public @Entity class FragmentFieldMetadata {
     public FragmentFieldMetadata() {
     }
 
-    @Required
+    @Required @Value
     public String getName() {
         return name;
     }
@@ -23,7 +24,7 @@ public @Entity class FragmentFieldMetadata {
         this.name = name;
     }
 
-    @Required
+    @Required @Link
     public Method getGetter() {
         return getter;
     }
@@ -32,7 +33,7 @@ public @Entity class FragmentFieldMetadata {
         this.getter = getter;
     }
 
-    public <T> T getValue(CObject object) {
+    public <T> T getValue(Object object) {
         try {
             return (T) getter.invoke(object);
         } catch (ReflectiveOperationException e) {

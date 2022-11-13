@@ -3,6 +3,7 @@ package cz.mg.crisp.entity;
 import cz.mg.annotations.classes.Entity;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Required;
+import cz.mg.annotations.storage.Value;
 
 public @Entity class GlobalVector {
     private Integer x;
@@ -22,7 +23,7 @@ public @Entity class GlobalVector {
         this.y = vector.y;
     }
 
-    @Required
+    @Required @Value
     public Integer getX() {
         return x;
     }
@@ -31,7 +32,7 @@ public @Entity class GlobalVector {
         this.x = x;
     }
 
-    @Required
+    @Required @Value
     public Integer getY() {
         return y;
     }
