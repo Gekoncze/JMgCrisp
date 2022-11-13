@@ -15,6 +15,7 @@ import cz.mg.crisp.services.MetadataFactory;
 import cz.mg.crisp.services.SelectionService;
 import cz.mg.crisp.services.ZoomService;
 import cz.mg.crisp.services.cobject.CObjectMetadataFactory;
+import cz.mg.crisp.utilities.Timer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,6 +24,8 @@ import java.awt.event.MouseWheelEvent;
 
 public @Utility class ScenePanel extends JPanel {
     private static final Color BACKGROUND_COLOR = Color.WHITE;
+    private static final int DEFAULT_FPS_LIMIT = 25;
+    private static final int DEFAULT_DELAY = Math.max(1, 1000 / DEFAULT_FPS_LIMIT);
 
     private final @Mandatory SceneRenderer sceneRenderer = SceneRenderer.getInstance();
     private final @Mandatory CoordinateService coordinateService = CoordinateService.getInstance();
@@ -31,6 +34,7 @@ public @Utility class ScenePanel extends JPanel {
     private final @Mandatory MetadataFactory metadataFactory = CObjectMetadataFactory.getInstance();
 
     private final @Mandatory SceneMetadata sceneMetadata = new SceneMetadata();
+    private final @Mandatory Timer timer = new Timer(DEFAULT_DELAY);
 
     private @Optional Scene scene;
     private @Optional CameraMoveAction cameraMoveAction;
@@ -77,11 +81,15 @@ public @Utility class ScenePanel extends JPanel {
 
     private void onMouseReleased(@Mandatory MouseEvent event) {
         if (cameraMoveAction != null) {
+            GlobalPoint mouse = coordinateService.convert(event.getPoint());
+            cameraMoveAction.onMouseDragged(mouse);
             cameraMoveAction = null;
             repaint();
         }
 
         if (fragmentMoveAction != null) {
+            GlobalPoint mouse = coordinateService.convert(event.getPoint());
+            fragmentMoveAction.onMouseDragged(mouse);
             fragmentMoveAction = null;
             repaint();
         }
@@ -92,16 +100,18 @@ public @Utility class ScenePanel extends JPanel {
     }
 
     private void onMouseDragged(@Mandatory MouseEvent event) {
-        GlobalPoint mouse = coordinateService.convert(event.getPoint());
+        if (timer.tick()) {
+            if (cameraMoveAction != null) {
+                GlobalPoint mouse = coordinateService.convert(event.getPoint());
+                cameraMoveAction.onMouseDragged(mouse);
+                repaint();
+            }
 
-        if (cameraMoveAction != null) {
-            cameraMoveAction.onMouseDragged(mouse);
-            repaint();
-        }
-
-        if (fragmentMoveAction != null) {
-            fragmentMoveAction.onMouseDragged(mouse);
-            repaint();
+            if (fragmentMoveAction != null) {
+                GlobalPoint mouse = coordinateService.convert(event.getPoint());
+                fragmentMoveAction.onMouseDragged(mouse);
+                repaint();
+            }
         }
     }
 
