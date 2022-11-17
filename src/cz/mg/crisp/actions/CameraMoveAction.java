@@ -5,7 +5,7 @@ import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.crisp.entity.*;
 import cz.mg.crisp.services.CoordinateService;
 
-public @Utility class CameraMoveAction {
+public @Utility class CameraMoveAction implements Action {
     private final CoordinateService coordinateService = CoordinateService.getInstance();
 
     private final @Mandatory Camera camera;
@@ -18,7 +18,17 @@ public @Utility class CameraMoveAction {
         this.cameraStart = new LocalPoint(camera.getPosition());
     }
 
+    @Override
     public void onMouseDragged(@Mandatory GlobalPoint mouse) {
+        move(mouse);
+    }
+
+    @Override
+    public void onMouseReleased(@Mandatory GlobalPoint mouse) {
+        move(mouse);
+    }
+
+    private void move(@Mandatory GlobalPoint mouse) {
         GlobalVector globalDelta = GlobalPoint.minus(mouse, mouseStart);
         LocalVector localDelta = coordinateService.globalToLocal(camera, globalDelta);
         camera.setPosition(LocalPoint.move(cameraStart, LocalVector.inverse(localDelta)));

@@ -3,8 +3,10 @@ package cz.mg.crisp.ui;
 import cz.mg.annotations.classes.Utility;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
+import cz.mg.crisp.actions.Action;
 import cz.mg.crisp.actions.CameraMoveAction;
 import cz.mg.crisp.actions.FragmentMoveAction;
+import cz.mg.crisp.actions.RangeSelectionAction;
 import cz.mg.crisp.entity.GlobalPoint;
 import cz.mg.crisp.entity.Scene;
 import cz.mg.crisp.entity.metadata.SceneMetadata;
@@ -37,8 +39,7 @@ public @Utility class ScenePanel extends JPanel {
     private final @Mandatory Timer timer = new Timer(DEFAULT_DELAY);
 
     private @Optional Scene scene;
-    private @Optional CameraMoveAction cameraMoveAction;
-    private @Optional FragmentMoveAction fragmentMoveAction;
+    private @Optional Action action;
 
     public ScenePanel() {
         sceneMetadata.setMetadataFactory(metadataFactory);
@@ -55,22 +56,28 @@ public @Utility class ScenePanel extends JPanel {
 
     public void setScene(@Optional Scene scene) {
         this.scene = scene;
+        cancel();
     }
 
     public void cancel() {
-        cameraMoveAction = null;
+        action = null;
+        repaint();
     }
 
     private void onMousePressed(@Mandatory MouseEvent event) {
         if (scene != null) {
             if (event.getButton() == MouseEvent.BUTTON1) {
                 GlobalPoint mouse = coordinateService.convert(event.getPoint());
-                boolean incremental = event.isControlDown();
 
-                if (selectionService.isSelectedAt(mouse, scene) && !incremental) {
-                    fragmentMoveAction = new FragmentMoveAction(scene, mouse);
+                boolean incremental = event.isControlDown();
+                boolean range = event.isShiftDown();
+
+                if (range) {
+                    action = new RangeSelectionAction(scene, mouse);
+                } else if (selectionService.isSelectedAt(mouse, scene) && !incremental) {
+                    action = new FragmentMoveAction(scene, mouse);
                 } else if (!selectionService.select(mouse, scene, incremental)) {
-                    cameraMoveAction = new CameraMoveAction(scene.getCamera(), mouse);
+                    action = new CameraMoveAction(scene.getCamera(), mouse);
                 }
 
                 updateCursor(event);
@@ -80,18 +87,15 @@ public @Utility class ScenePanel extends JPanel {
     }
 
     private void onMouseReleased(@Mandatory MouseEvent event) {
-        if (cameraMoveAction != null) {
-            GlobalPoint mouse = coordinateService.convert(event.getPoint());
-            cameraMoveAction.onMouseDragged(mouse);
-            cameraMoveAction = null;
-            repaint();
-        }
-
-        if (fragmentMoveAction != null) {
-            GlobalPoint mouse = coordinateService.convert(event.getPoint());
-            fragmentMoveAction.onMouseDragged(mouse);
-            fragmentMoveAction = null;
-            repaint();
+        if (scene != null) {
+            if (action != null) {
+                GlobalPoint mouse = coordinateService.convert(event.getPoint());
+                action.onMouseReleased(mouse);
+                action = null;
+                repaint();
+            }
+        } else {
+            cancel();
         }
     }
 
@@ -100,18 +104,16 @@ public @Utility class ScenePanel extends JPanel {
     }
 
     private void onMouseDragged(@Mandatory MouseEvent event) {
-        if (timer.tick()) {
-            if (cameraMoveAction != null) {
-                GlobalPoint mouse = coordinateService.convert(event.getPoint());
-                cameraMoveAction.onMouseDragged(mouse);
-                repaint();
+        if (scene != null) {
+            if (action != null) {
+                if (timer.tick()) {
+                    GlobalPoint mouse = coordinateService.convert(event.getPoint());
+                    action.onMouseDragged(mouse);
+                    repaint();
+                }
             }
-
-            if (fragmentMoveAction != null) {
-                GlobalPoint mouse = coordinateService.convert(event.getPoint());
-                fragmentMoveAction.onMouseDragged(mouse);
-                repaint();
-            }
+        } else {
+            cancel();
         }
     }
 
@@ -143,11 +145,20 @@ public @Utility class ScenePanel extends JPanel {
     }
 
     private void draw(@Mandatory Graphics2D g) {
+        g.setRenderingHints(new RenderingHints(
+            RenderingHints.KEY_ANTIALIASING,
+            RenderingHints.VALUE_ANTIALIAS_ON
+        ));
+
         g.setColor(BACKGROUND_COLOR);
         g.fillRect(0, 0, getWidth(), getHeight());
 
         if (scene != null) {
             sceneRenderer.drawScene(g, sceneMetadata, scene);
+        }
+
+        if (action != null) {
+            action.draw(g);
         }
     }
 }

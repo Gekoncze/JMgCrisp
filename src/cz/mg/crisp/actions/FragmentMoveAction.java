@@ -8,7 +8,7 @@ import cz.mg.crisp.entity.*;
 import cz.mg.crisp.services.CoordinateService;
 import cz.mg.crisp.services.ReferencePositionService;
 
-public @Utility class FragmentMoveAction {
+public @Utility class FragmentMoveAction implements Action {
     private final CoordinateService coordinateService = CoordinateService.getInstance();
     private final ReferencePositionService referencePositionService = ReferencePositionService.getInstance();
 
@@ -26,7 +26,17 @@ public @Utility class FragmentMoveAction {
         }
     }
 
+    @Override
     public void onMouseDragged(@Mandatory GlobalPoint mouse) {
+        move(mouse);
+    }
+
+    @Override
+    public void onMouseReleased(@Mandatory GlobalPoint mouse) {
+        move(mouse);
+    }
+
+    private void move(@Mandatory GlobalPoint mouse) {
         GlobalVector globalDelta = GlobalPoint.minus(mouse, mouseStart);
         LocalVector localDelta = coordinateService.globalToLocal(scene.getCamera(), globalDelta);
         for (ReadablePair<Fragment, LocalPoint> pair : fragmentsStart) {
