@@ -63,4 +63,8 @@ public @Entity class LocalVector {
             Math.max(a.y, b.y)
         );
     }
+
+    public static double length(@Mandatory LocalVector v) {
+        return Math.sqrt(v.x * v.x + v.y * v.y);
+    }
 }
