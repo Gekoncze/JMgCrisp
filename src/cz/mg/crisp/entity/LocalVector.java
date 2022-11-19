@@ -52,4 +52,15 @@ public @Entity class LocalVector {
     public static @Mandatory LocalVector multiply(@Mandatory LocalVector v, double value) {
         return new LocalVector((int)(v.x * value), (int)(v.y * value));
     }
+
+    public static @Mandatory LocalVector plus(@Mandatory LocalVector a, @Mandatory LocalVector b) {
+        return new LocalVector(a.x + b.x, a.y + b.y);
+    }
+
+    public static @Mandatory LocalVector max(@Mandatory LocalVector a, @Mandatory LocalVector b) {
+        return new LocalVector(
+            Math.max(a.x, b.x),
+            Math.max(a.y, b.y)
+        );
+    }
 }

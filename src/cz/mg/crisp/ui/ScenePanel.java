@@ -3,10 +3,8 @@ package cz.mg.crisp.ui;
 import cz.mg.annotations.classes.Utility;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
+import cz.mg.crisp.actions.*;
 import cz.mg.crisp.actions.Action;
-import cz.mg.crisp.actions.CameraMoveAction;
-import cz.mg.crisp.actions.FragmentMoveAction;
-import cz.mg.crisp.actions.RangeSelectionAction;
 import cz.mg.crisp.entity.Fragment;
 import cz.mg.crisp.entity.GlobalPoint;
 import cz.mg.crisp.entity.Reference;
@@ -23,13 +21,21 @@ import cz.mg.crisp.utilities.Timer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
 public @Utility class ScenePanel extends JPanel {
     private static final Color BACKGROUND_COLOR = Color.WHITE;
+
     private static final int DEFAULT_FPS_LIMIT = 25;
     private static final int DEFAULT_DELAY = Math.max(1, 1000 / DEFAULT_FPS_LIMIT);
+    private static final int RESIZE_RADIUS = 4;
+
+    private static final Cursor DEFAULT_CURSOR = new Cursor(Cursor.DEFAULT_CURSOR);
+    private static final Cursor RESIZE_CURSOR = new Cursor(Cursor.SE_RESIZE_CURSOR);
+    private static final Cursor MOVE_CURSOR = new Cursor(Cursor.MOVE_CURSOR);
 
     private final @Mandatory SceneRenderer sceneRenderer = SceneRenderer.getInstance();
     private final @Mandatory CoordinateService coordinateService = CoordinateService.getInstance();
@@ -42,15 +48,18 @@ public @Utility class ScenePanel extends JPanel {
 
     private @Optional Scene scene;
     private @Optional Action action;
-    private @Optional Fragment resizableFragment;
+    private @Mandatory GlobalPoint mouse = new GlobalPoint();
 
     public ScenePanel() {
+        setFocusable(true);
         sceneMetadata.setMetadataFactory(metadataFactory);
         addMouseListener(new UserMousePressedListener(this::onMousePressed));
         addMouseListener(new UserMouseReleasedListener(this::onMouseReleased));
         addMouseMotionListener(new UserMouseMovedListener(this::onMouseMoved));
         addMouseMotionListener(new UserMouseDraggedListener(this::onMouseDragged));
         addMouseWheelListener(new UserMouseWheelListener(this::onMouseWheelMoved));
+        addKeyListener(new UserKeyPressedListener(this::onKeyPressed));
+        addKeyListener(new UserKeyReleasedListener(this::onKeyReleased));
     }
 
     public @Optional Scene getScene() {
@@ -78,37 +87,41 @@ public @Utility class ScenePanel extends JPanel {
                 reference.setSelected(false);
             }
         }
-        resizableFragment = null;
         repaint();
     }
 
     private void onMousePressed(@Mandatory MouseEvent event) {
+        requestFocus();
+        updateMouse(event);
+
         if (scene != null) {
             if (event.getButton() == MouseEvent.BUTTON1) {
-                GlobalPoint mouse = coordinateService.convert(event.getPoint());
-
                 boolean incremental = event.isControlDown();
                 boolean range = event.isShiftDown();
 
                 if (range) {
                     action = new RangeSelectionAction(scene, mouse);
-                } else if (selectionService.isSelectedAt(mouse, scene) && !incremental) {
+                } else if(selectionService.isSelectedResizableAt(scene, mouse, RESIZE_RADIUS) && !incremental) {
+                    action = new FragmentResizeAction(scene, mouse);
+                } else if (selectionService.isSelectedAt(scene, mouse) && !incremental) {
                     action = new FragmentMoveAction(scene, mouse);
-                } else if (!selectionService.select(mouse, scene, incremental)) {
+                } else if (!selectionService.select(scene, mouse, incremental)) {
                     action = new CameraMoveAction(scene.getCamera(), mouse);
                 }
 
-                updateResizableFragment();
                 updateCursor(event);
                 repaint();
             }
+        } else {
+            cancel();
         }
     }
 
     private void onMouseReleased(@Mandatory MouseEvent event) {
+        updateMouse(event);
+
         if (scene != null) {
             if (action != null) {
-                GlobalPoint mouse = coordinateService.convert(event.getPoint());
                 action.onMouseReleased(mouse);
                 action = null;
                 repaint();
@@ -119,14 +132,16 @@ public @Utility class ScenePanel extends JPanel {
     }
 
     private void onMouseMoved(@Mandatory MouseEvent event) {
+        updateMouse(event);
         updateCursor(event);
     }
 
     private void onMouseDragged(@Mandatory MouseEvent event) {
+        updateMouse(event);
+
         if (scene != null) {
             if (action != null) {
                 if (timer.tick()) {
-                    GlobalPoint mouse = coordinateService.convert(event.getPoint());
                     action.onMouseDragged(mouse);
                     repaint();
                 }
@@ -138,39 +153,44 @@ public @Utility class ScenePanel extends JPanel {
 
     private void onMouseWheelMoved(@Mandatory MouseWheelEvent event) {
         if (scene != null) {
-            zoomService.zoom(
-                scene.getCamera(),
-                coordinateService.convert(event.getPoint()),
-                event.getWheelRotation()
-            );
+            zoomService.zoom(scene.getCamera(), mouse, event.getWheelRotation());
             repaint();
+        } else {
+            cancel();
         }
     }
 
-    private void updateResizableFragment() {
-        if (scene != null) {
-            resizableFragment = null;
-            for (Fragment fragment : scene.getFragments()) {
-                if (fragment.isSelected()) {
-                    if (resizableFragment == null) {
-                        resizableFragment = fragment;
-                    } else {
-                        resizableFragment = null;
-                        return;
-                    }
-                }
-            }
-            repaint();
+    private void onKeyPressed(@Mandatory KeyEvent event) {
+        requestFocus();
+
+        if (event.getKeyCode() == KeyEvent.VK_CONTROL || event.getKeyCode() == KeyEvent.VK_SHIFT) {
+            updateCursor(event);
         }
     }
 
-    private void updateCursor(@Mandatory MouseEvent event) {
+    private void onKeyReleased(@Mandatory KeyEvent event) {
+        if (event.getKeyCode() == KeyEvent.VK_CONTROL || event.getKeyCode() == KeyEvent.VK_SHIFT) {
+            updateCursor(event);
+        }
+    }
+
+    private void updateMouse(@Mandatory MouseEvent event) {
+        mouse = coordinateService.convert(event.getPoint());
+    }
+
+    private void updateCursor(@Mandatory InputEvent event) {
         if (scene != null) {
-            GlobalPoint mouse = coordinateService.convert(event.getPoint());
-            if (selectionService.isSelectedAt(mouse, scene)) {
-                setCursor(new Cursor(Cursor.MOVE_CURSOR));
+            boolean incremental = event.isControlDown();
+            boolean range = event.isShiftDown();
+
+            if (range) {
+                setCursor(DEFAULT_CURSOR);
+            } else if (selectionService.isSelectedResizableAt(scene, mouse, RESIZE_RADIUS) && !incremental) {
+                setCursor(RESIZE_CURSOR);
+            } else if (selectionService.isSelectedAt(scene, mouse) && !incremental) {
+                setCursor(MOVE_CURSOR);
             } else {
-                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                setCursor(DEFAULT_CURSOR);
             }
         }
     }

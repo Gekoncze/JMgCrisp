@@ -24,7 +24,7 @@ public @Service class SelectionService {
     private SelectionService() {
     }
 
-    public boolean isSelectedAt(@Mandatory GlobalPoint point, @Mandatory Scene scene) {
+    public boolean isSelectedAt(@Mandatory Scene scene, @Mandatory GlobalPoint point) {
         LocalPoint local = coordinateService.globalToLocal(scene.getCamera(), point);
 
         for (Fragment fragment : scene.getFragments()) {
@@ -38,7 +38,27 @@ public @Service class SelectionService {
         return false;
     }
 
-    public boolean select(@Mandatory GlobalPoint point, @Mandatory Scene scene, boolean incremental) {
+    public boolean isSelectedResizableAt(@Mandatory Scene scene, @Mandatory GlobalPoint point, int radius) {
+        LocalPoint local = coordinateService.globalToLocal(scene.getCamera(), point);
+
+        for (Fragment fragment : scene.getFragments()) {
+            if (fragment.isSelected()) {
+                if (isResizableAt(fragment, local, radius)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isResizableAt(@Mandatory Fragment fragment, @Mandatory LocalPoint local, int radius) {
+        LocalPoint target = LocalPoint.move(fragment.getPosition(), fragment.getSize());
+        double distance = LocalPoint.distance(local, target);
+        return distance <= radius;
+    }
+
+    public boolean select(@Mandatory Scene scene, @Mandatory GlobalPoint point, boolean incremental) {
         LocalPoint local = coordinateService.globalToLocal(scene.getCamera(), point);
 
         if (incremental) {

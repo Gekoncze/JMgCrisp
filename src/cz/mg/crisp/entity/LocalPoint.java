@@ -63,4 +63,10 @@ public @Entity class LocalPoint {
     private static int combine(int a, int b, double t) {
         return (int) (a * (1.0 - t) + b * t);
     }
+
+    public static double distance(@Mandatory LocalPoint a, @Mandatory LocalPoint b) {
+        int dx = a.x - b.x;
+        int dy = a.y - b.y;
+        return Math.sqrt(dx*dx + dy*dy);
+    }
 }
