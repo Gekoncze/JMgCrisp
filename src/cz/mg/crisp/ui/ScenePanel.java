@@ -7,7 +7,9 @@ import cz.mg.crisp.actions.Action;
 import cz.mg.crisp.actions.CameraMoveAction;
 import cz.mg.crisp.actions.FragmentMoveAction;
 import cz.mg.crisp.actions.RangeSelectionAction;
+import cz.mg.crisp.entity.Fragment;
 import cz.mg.crisp.entity.GlobalPoint;
+import cz.mg.crisp.entity.Reference;
 import cz.mg.crisp.entity.Scene;
 import cz.mg.crisp.entity.metadata.SceneMetadata;
 import cz.mg.crisp.event.*;
@@ -40,6 +42,7 @@ public @Utility class ScenePanel extends JPanel {
 
     private @Optional Scene scene;
     private @Optional Action action;
+    private @Optional Fragment resizableFragment;
 
     public ScenePanel() {
         sceneMetadata.setMetadataFactory(metadataFactory);
@@ -61,6 +64,21 @@ public @Utility class ScenePanel extends JPanel {
 
     public void cancel() {
         action = null;
+        clearSelection();
+        repaint();
+    }
+
+    private void clearSelection() {
+        if (scene != null) {
+            for (Fragment fragment : scene.getFragments()) {
+                fragment.setSelected(false);
+            }
+
+            for (Reference reference : scene.getReferences()) {
+                reference.setSelected(false);
+            }
+        }
+        resizableFragment = null;
         repaint();
     }
 
@@ -80,6 +98,7 @@ public @Utility class ScenePanel extends JPanel {
                     action = new CameraMoveAction(scene.getCamera(), mouse);
                 }
 
+                updateResizableFragment();
                 updateCursor(event);
                 repaint();
             }
@@ -124,6 +143,23 @@ public @Utility class ScenePanel extends JPanel {
                 coordinateService.convert(event.getPoint()),
                 event.getWheelRotation()
             );
+            repaint();
+        }
+    }
+
+    private void updateResizableFragment() {
+        if (scene != null) {
+            resizableFragment = null;
+            for (Fragment fragment : scene.getFragments()) {
+                if (fragment.isSelected()) {
+                    if (resizableFragment == null) {
+                        resizableFragment = fragment;
+                    } else {
+                        resizableFragment = null;
+                        return;
+                    }
+                }
+            }
             repaint();
         }
     }
