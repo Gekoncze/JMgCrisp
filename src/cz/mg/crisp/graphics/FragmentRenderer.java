@@ -10,7 +10,6 @@ import cz.mg.crisp.entity.metadata.SceneMetadata;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.util.Objects;
 
 public @Service class FragmentRenderer {
     private static final Color BACKGROUND_COLOR = new Color(255, 255, 192);
@@ -76,10 +75,32 @@ public @Service class FragmentRenderer {
 
     private @Mandatory String valueToString(@Mandatory SceneMetadata metadata, @Optional Object object) {
         if (object != null) {
-            return getObjectIdentity(metadata, object);
+            if (isPrimitive(object.getClass())) {
+                return object.toString();
+            } else {
+                return getObjectIdentity(metadata, object);
+            }
         } else {
             return "null";
         }
+    }
+
+    private boolean isPrimitive(@Mandatory Class<?> clazz) {
+        return clazz.equals(String.class) ||
+            clazz.equals(Float.class) ||
+            clazz.equals(float.class) ||
+            clazz.equals(Double.class) ||
+            clazz.equals(double.class) ||
+            clazz.equals(Integer.class) ||
+            clazz.equals(int.class) ||
+            clazz.equals(Short.class) ||
+            clazz.equals(short.class) ||
+            clazz.equals(Long.class) ||
+            clazz.equals(long.class) ||
+            clazz.equals(Character.class) ||
+            clazz.equals(char.class) ||
+            clazz.equals(Byte.class) ||
+            clazz.equals(byte.class);
     }
 
     private @Mandatory String getObjectIdentity(@Mandatory SceneMetadata metadata, @Mandatory Object object) {
