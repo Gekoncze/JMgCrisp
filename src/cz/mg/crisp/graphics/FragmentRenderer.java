@@ -13,6 +13,7 @@ public @Service class FragmentRenderer {
     private static final Color FOREGROUND_COLOR = Color.BLACK;
     private static final Color SELECTION_COLOR = Color.GREEN;
     private static final Font FONT = new Font("monospaced", Font.PLAIN, 12);
+    private static final int PADDING = 4;
 
     private static @Optional FragmentRenderer instance;
 
@@ -50,18 +51,21 @@ public @Service class FragmentRenderer {
     }
 
     private void drawContent(@Mandatory Graphics2D g, @Mandatory Fragment fragment) {
-
         int fontHeight = g.getFontMetrics().getHeight();
-        int padding = 4;
 
         g.setFont(FONT);
         g.setColor(FOREGROUND_COLOR);
-        g.drawString(fragment.getHeader(), padding, fontHeight);
+        g.drawString(fragment.getHeader(), PADDING, fontHeight);
 
-        int i = 1;
+        int base = fontHeight + PADDING;
+
+        int i = 0;
         for (String row : fragment.getRows()) {
             i++;
-            g.drawString(row, padding, fontHeight * i);
+            g.drawString(row, PADDING, base + PADDING + fontHeight * i);
         }
+
+        g.setColor(fragment.isSelected() ? SELECTION_COLOR : FOREGROUND_COLOR);
+        g.drawLine(0, base, fragment.getSize().getX(), base);
     }
 }
