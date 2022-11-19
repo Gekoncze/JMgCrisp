@@ -4,9 +4,6 @@ import cz.mg.annotations.classes.Service;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
 import cz.mg.crisp.entity.Fragment;
-import cz.mg.crisp.entity.metadata.FragmentFieldMetadata;
-import cz.mg.crisp.entity.metadata.FragmentMetadata;
-import cz.mg.crisp.entity.metadata.SceneMetadata;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -29,13 +26,13 @@ public @Service class FragmentRenderer {
     private FragmentRenderer() {
     }
 
-    public void draw(@Mandatory Graphics2D g, @Mandatory SceneMetadata metadata, @Mandatory Fragment fragment) {
+    public void draw(@Mandatory Graphics2D g, @Mandatory Fragment fragment) {
         AffineTransform transform = g.getTransform();
         g.translate(fragment.getPosition().getX(), fragment.getPosition().getY());
         g.setClip(0, 0, fragment.getSize().getX() + 1, fragment.getSize().getY() + 1);
 
         drawBackground(g, fragment);
-        drawContent(g, metadata, fragment.getObject());
+        drawContent(g, fragment);
         drawForeground(g, fragment);
 
         g.setClip(null);
@@ -52,67 +49,19 @@ public @Service class FragmentRenderer {
         g.drawRect(0, 0, fragment.getSize().getX(), fragment.getSize().getY());
     }
 
-    private void drawContent(@Mandatory Graphics2D g, @Mandatory SceneMetadata metadata, @Mandatory Object object) {
-        FragmentMetadata fragmentMetadata = metadata.get(object);
+    private void drawContent(@Mandatory Graphics2D g, @Mandatory Fragment fragment) {
 
-        String name = fragmentMetadata.getName();
-        String identity = getObjectIdentity(metadata, object);
-        String header = name + " " + identity;
         int fontHeight = g.getFontMetrics().getHeight();
         int padding = 4;
 
         g.setFont(FONT);
         g.setColor(FOREGROUND_COLOR);
-        g.drawString(header, padding, fontHeight);
+        g.drawString(fragment.getHeader(), padding, fontHeight);
 
         int i = 1;
-        for (FragmentFieldMetadata fieldMetadata : fragmentMetadata.getFields()) {
+        for (String row : fragment.getRows()) {
             i++;
-            String stringValue = valueToString(metadata, fieldMetadata.getValue(object));
-            g.drawString(fieldMetadata.getName() + ": " + stringValue, padding, fontHeight * i);
-        }
-    }
-
-    private @Mandatory String valueToString(@Mandatory SceneMetadata metadata, @Optional Object object) {
-        if (object != null) {
-            if (isPrimitive(object.getClass())) {
-                return object.toString();
-            } else {
-                return getObjectIdentity(metadata, object);
-            }
-        } else {
-            return "null";
-        }
-    }
-
-    private boolean isPrimitive(@Mandatory Class<?> clazz) {
-        return clazz.equals(String.class) ||
-            clazz.equals(Float.class) ||
-            clazz.equals(float.class) ||
-            clazz.equals(Double.class) ||
-            clazz.equals(double.class) ||
-            clazz.equals(Integer.class) ||
-            clazz.equals(int.class) ||
-            clazz.equals(Short.class) ||
-            clazz.equals(short.class) ||
-            clazz.equals(Long.class) ||
-            clazz.equals(long.class) ||
-            clazz.equals(Character.class) ||
-            clazz.equals(char.class) ||
-            clazz.equals(Byte.class) ||
-            clazz.equals(byte.class);
-    }
-
-    private @Mandatory String getObjectIdentity(@Mandatory SceneMetadata metadata, @Mandatory Object object) {
-        if (metadata.getMetadataFactory().isCompatible(object.getClass())) {
-            Long identity = metadata.getMetadataFactory().getIdentity(object);
-            if (identity != null) {
-                return identity.toString();
-            } else {
-                return Long.toHexString(System.identityHashCode(object));
-            }
-        } else {
-            return Long.toHexString(System.identityHashCode(object));
+            g.drawString(row, padding, fontHeight * i);
         }
     }
 }

@@ -2,15 +2,19 @@ package cz.mg.crisp.entity;
 
 import cz.mg.annotations.classes.Entity;
 import cz.mg.annotations.requirement.Required;
+import cz.mg.annotations.storage.Cache;
 import cz.mg.annotations.storage.Link;
 import cz.mg.annotations.storage.Part;
 import cz.mg.annotations.storage.Value;
+import cz.mg.collections.list.List;
 
 public @Entity class Fragment {
     private Object object;
     private LocalPoint position;
     private LocalVector size;
     private Boolean selected;
+    private String header;
+    private List<String> rows;
 
     public Fragment() {
     }
@@ -49,5 +53,27 @@ public @Entity class Fragment {
 
     public void setSelected(Boolean selected) {
         this.selected = selected;
+    }
+
+    public Boolean getSelected() {
+        return selected;
+    }
+
+    @Required @Cache
+    public String getHeader() {
+        return header;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
+    }
+
+    @Required @Cache
+    public List<String> getRows() {
+        return rows;
+    }
+
+    public void setRows(List<String> rows) {
+        this.rows = rows;
     }
 }

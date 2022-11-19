@@ -6,11 +6,11 @@ import cz.mg.annotations.storage.Part;
 import cz.mg.annotations.storage.Value;
 import cz.mg.collections.list.List;
 
-public @Entity class FragmentMetadata {
+public @Entity class ClassMetadata {
     private String name;
-    private List<FragmentFieldMetadata> fields = new List<>();
+    private List<FieldMetadata> fields = new List<>();
 
-    public FragmentMetadata() {
+    public ClassMetadata() {
     }
 
     @Required @Value
@@ -23,11 +23,11 @@ public @Entity class FragmentMetadata {
     }
 
     @Required @Part
-    public List<FragmentFieldMetadata> getFields() {
+    public List<FieldMetadata> getFields() {
         return fields;
     }
 
-    public void setFields(List<FragmentFieldMetadata> fields) {
+    public void setFields(List<FieldMetadata> fields) {
         this.fields = fields;
     }
 }

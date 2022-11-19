@@ -9,13 +9,10 @@ import cz.mg.crisp.entity.Fragment;
 import cz.mg.crisp.entity.GlobalPoint;
 import cz.mg.crisp.entity.Reference;
 import cz.mg.crisp.entity.Scene;
-import cz.mg.crisp.entity.metadata.SceneMetadata;
+import cz.mg.crisp.entity.metadata.Metadata;
 import cz.mg.crisp.event.*;
 import cz.mg.crisp.graphics.SceneRenderer;
-import cz.mg.crisp.services.CoordinateService;
-import cz.mg.crisp.services.MetadataFactory;
-import cz.mg.crisp.services.SelectionService;
-import cz.mg.crisp.services.ZoomService;
+import cz.mg.crisp.services.*;
 import cz.mg.crisp.services.cobject.CObjectMetadataFactory;
 import cz.mg.crisp.utilities.Timer;
 
@@ -42,8 +39,9 @@ public @Utility class ScenePanel extends JPanel {
     private final @Mandatory SelectionService selectionService = SelectionService.getInstance();
     private final @Mandatory ZoomService zoomService = ZoomService.getInstance();
     private final @Mandatory MetadataFactory metadataFactory = CObjectMetadataFactory.getInstance();
+    private final @Mandatory FragmentDataReader fragmentDataReader = FragmentDataReader.getInstance();
 
-    private final @Mandatory SceneMetadata sceneMetadata = new SceneMetadata();
+    private final @Mandatory Metadata metadata = new Metadata();
     private final @Mandatory Timer timer = new Timer(DEFAULT_DELAY);
 
     private @Optional Scene scene;
@@ -52,7 +50,7 @@ public @Utility class ScenePanel extends JPanel {
 
     public ScenePanel() {
         setFocusable(true);
-        sceneMetadata.setMetadataFactory(metadataFactory);
+        metadata.setMetadataFactory(metadataFactory);
         addMouseListener(new UserMousePressedListener(this::onMousePressed));
         addMouseListener(new UserMouseReleasedListener(this::onMouseReleased));
         addMouseMotionListener(new UserMouseMovedListener(this::onMouseMoved));
@@ -68,12 +66,22 @@ public @Utility class ScenePanel extends JPanel {
 
     public void setScene(@Optional Scene scene) {
         this.scene = scene;
+        refreshFragmentData();
         cancel();
     }
 
     public void cancel() {
         action = null;
         clearSelection();
+        repaint();
+    }
+
+    private void refreshFragmentData() {
+        if (scene != null) {
+            for (Fragment fragment : scene.getFragments()) {
+                fragmentDataReader.update(fragment, metadata);
+            }
+        }
         repaint();
     }
 
@@ -210,7 +218,7 @@ public @Utility class ScenePanel extends JPanel {
         g.fillRect(0, 0, getWidth(), getHeight());
 
         if (scene != null) {
-            sceneRenderer.drawScene(g, sceneMetadata, scene);
+            sceneRenderer.drawScene(g, scene);
         }
 
         if (action != null) {

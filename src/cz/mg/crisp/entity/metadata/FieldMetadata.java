@@ -8,11 +8,11 @@ import cz.mg.annotations.storage.Value;
 import java.lang.reflect.Method;
 
 @SuppressWarnings("unchecked")
-public @Entity class FragmentFieldMetadata {
+public @Entity class FieldMetadata {
     private String name;
     private Method getter;
 
-    public FragmentFieldMetadata() {
+    public FieldMetadata() {
     }
 
     @Required @Value
