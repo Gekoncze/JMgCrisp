@@ -24,7 +24,7 @@ public @Utility class MainMenu extends JMenuBar {
         JMenu editMenu = new JMenu("Edit");
         editMenu.setMnemonic('E');
 
-        JMenuItem cancelCurrentActionItem = new JMenuItem("Cancel current action");
+        JMenuItem cancelCurrentActionItem = new JMenuItem("Cancel");
         cancelCurrentActionItem.setMnemonic('C');
         cancelCurrentActionItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0));
         cancelCurrentActionItem.addActionListener(new UserActionListener(() -> window.getScenePanel().cancel()));
