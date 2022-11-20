@@ -4,8 +4,8 @@ import cz.mg.annotations.classes.Service;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
 import cz.mg.c.CObject;
-import cz.mg.crisp.entity.metadata.FieldMetadata;
 import cz.mg.crisp.entity.metadata.ClassMetadata;
+import cz.mg.crisp.entity.metadata.FieldMetadata;
 import cz.mg.crisp.services.MetadataFactory;
 
 import java.lang.reflect.Method;
@@ -42,7 +42,13 @@ public @Service class CObjectMetadataFactory implements MetadataFactory {
                     if (method.getName().startsWith("get")) {
                         FieldMetadata fieldMetadata = new FieldMetadata();
                         fieldMetadata.setName(method.getName().replaceFirst("get", ""));
-                        fieldMetadata.setGetter(method);
+                        fieldMetadata.setFieldReader(object -> {
+                            try {
+                                return method.invoke(object);
+                            } catch (ReflectiveOperationException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
                         classMetadata.getFields().addLast(fieldMetadata);
                     }
                 }
@@ -56,11 +62,5 @@ public @Service class CObjectMetadataFactory implements MetadataFactory {
     public @Optional Long getIdentity(@Mandatory Object object) {
         checkCompatibility(object.getClass());
         return ((CObject)object).getAddress();
-    }
-
-    private void checkCompatibility(@Mandatory Class clazz) {
-        if (!isCompatible(clazz)) {
-            throw new IllegalArgumentException("Incompatible class " + clazz.getSimpleName() + ".");
-        }
     }
 }

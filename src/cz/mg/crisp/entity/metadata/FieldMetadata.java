@@ -1,16 +1,15 @@
 package cz.mg.crisp.entity.metadata;
 
 import cz.mg.annotations.classes.Entity;
+import cz.mg.annotations.requirement.Mandatory;
+import cz.mg.annotations.requirement.Optional;
 import cz.mg.annotations.requirement.Required;
 import cz.mg.annotations.storage.Link;
 import cz.mg.annotations.storage.Value;
 
-import java.lang.reflect.Method;
-
-@SuppressWarnings("unchecked")
 public @Entity class FieldMetadata {
     private String name;
-    private Method getter;
+    private FieldReader fieldReader;
 
     public FieldMetadata() {
     }
@@ -25,19 +24,15 @@ public @Entity class FieldMetadata {
     }
 
     @Required @Link
-    public Method getGetter() {
-        return getter;
+    public FieldReader getFieldReader() {
+        return fieldReader;
     }
 
-    public void setGetter(Method getter) {
-        this.getter = getter;
+    public void setFieldReader(FieldReader fieldReader) {
+        this.fieldReader = fieldReader;
     }
 
-    public <T> T getValue(Object object) {
-        try {
-            return (T) getter.invoke(object);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
+    public @Optional Object getValue(@Mandatory Object object) {
+        return fieldReader.read(object);
     }
 }
