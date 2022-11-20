@@ -11,11 +11,14 @@ import javax.swing.event.ListDataListener;
 import java.awt.*;
 
 public @Utility class PropertiesList extends JList<Object> {
+    private static final Color SELECTION_COLOR = UIManager.getDefaults().getColor("List.selectionBackground");
+
     private final @Mandatory Metadata metadata;
     private @Optional Object object;
 
     public PropertiesList(@Mandatory Metadata metadata) {
         this.metadata = metadata;
+        setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
     public @Optional Object getObject() {
@@ -89,6 +92,8 @@ public @Utility class PropertiesList extends JList<Object> {
             if (object != null) {
                 JLabel label = new JLabel();
                 label.setText(dataReader.getRow(metadata, object, fieldValue, i));
+                label.setOpaque(selected);
+                label.setBackground(selected ? SELECTION_COLOR : Color.WHITE);
                 return label;
             } else {
                 return new JLabel();
