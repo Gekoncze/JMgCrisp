@@ -4,39 +4,50 @@ import cz.mg.annotations.classes.Service;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
 import cz.mg.collections.list.List;
-import cz.mg.crisp.entity.Fragment;
-import cz.mg.crisp.entity.metadata.FieldMetadata;
 import cz.mg.crisp.entity.metadata.ClassMetadata;
+import cz.mg.crisp.entity.metadata.FieldMetadata;
 import cz.mg.crisp.entity.metadata.Metadata;
 
-public @Service class FragmentDataReader {
-    private static @Optional FragmentDataReader instance;
+public @Service class DataReader {
+    private static @Optional DataReader instance;
 
-    public static @Mandatory FragmentDataReader getInstance() {
+    public static @Mandatory DataReader getInstance() {
         if (instance == null) {
-            instance = new FragmentDataReader();
+            instance = new DataReader();
         }
         return instance;
     }
 
-    private FragmentDataReader() {
+    private DataReader() {
     }
 
-    public void update(@Mandatory Fragment fragment, @Mandatory Metadata metadata) {
-        Object object = fragment.getObject();
-
+    public @Mandatory String getHeader(@Mandatory Metadata metadata, @Mandatory Object object) {
         ClassMetadata classMetadata = metadata.get(object);
         String name = classMetadata.getName();
         String identity = getObjectIdentity(metadata, object);
-        String header = name + " " + identity;
-        fragment.setHeader(header);
+        return name + " " + identity;
+    }
 
-        fragment.setRows(new List<>());
+    public @Mandatory List<String> getRows(@Mandatory Metadata metadata, @Mandatory Object object) {
+        ClassMetadata classMetadata = metadata.get(object);
+        List<String> rows = new List<>();
         for (FieldMetadata fieldMetadata : classMetadata.getFields()) {
-            String stringValue = valueToString(metadata, fieldMetadata.getValue(object));
-            String row = fieldMetadata.getName() + ": " + stringValue;
-            fragment.getRows().addLast(row);
+            rows.addLast(getRow(metadata, fieldMetadata, object));
         }
+        return rows;
+    }
+
+    public @Mandatory String getRow(@Mandatory Metadata metadata, @Mandatory Object object, int i) {
+        return getRow(metadata, metadata.get(object).getFields().get(i), object);
+    }
+
+    private @Mandatory String getRow(
+        @Mandatory Metadata metadata,
+        @Mandatory FieldMetadata fieldMetadata,
+        @Mandatory Object object
+    ) {
+        String stringValue = valueToString(metadata, fieldMetadata.getValue(object));
+        return fieldMetadata.getName() + ": " + stringValue;
     }
 
     private @Mandatory String getObjectIdentity(@Mandatory Metadata metadata, @Mandatory Object object) {

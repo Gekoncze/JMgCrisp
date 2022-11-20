@@ -14,7 +14,6 @@ import cz.mg.crisp.event.*;
 import cz.mg.crisp.graphics.SceneRenderer;
 import cz.mg.crisp.graphics.SceneRenderingHints;
 import cz.mg.crisp.services.*;
-import cz.mg.crisp.services.cobject.CObjectMetadataFactory;
 import cz.mg.crisp.utilities.Timer;
 
 import javax.swing.*;
@@ -40,19 +39,18 @@ public @Utility class ScenePanel extends JPanel {
     private final @Mandatory CoordinateService coordinateService = CoordinateService.getInstance();
     private final @Mandatory SelectionService selectionService = SelectionService.getInstance();
     private final @Mandatory ZoomService zoomService = ZoomService.getInstance();
-    private final @Mandatory MetadataFactory metadataFactory = CObjectMetadataFactory.getInstance();
-    private final @Mandatory FragmentDataReader fragmentDataReader = FragmentDataReader.getInstance();
+    private final @Mandatory DataReader dataReader = DataReader.getInstance();
 
-    private final @Mandatory Metadata metadata = new Metadata();
+    private final @Mandatory Metadata metadata;
     private final @Mandatory Timer timer = new Timer(DEFAULT_DELAY);
 
     private @Optional Scene scene;
     private @Optional Action action;
     private @Mandatory GlobalPoint mouse = new GlobalPoint();
 
-    public ScenePanel() {
+    public ScenePanel(@Mandatory Metadata metadata) {
+        this.metadata = metadata;
         setFocusable(true);
-        metadata.setMetadataFactory(metadataFactory);
         addMouseListener(new UserMousePressedListener(this::onMousePressed));
         addMouseListener(new UserMouseReleasedListener(this::onMouseReleased));
         addMouseMotionListener(new UserMouseMovedListener(this::onMouseMoved));
@@ -81,7 +79,8 @@ public @Utility class ScenePanel extends JPanel {
     private void refreshFragmentData() {
         if (scene != null) {
             for (Fragment fragment : scene.getFragments()) {
-                fragmentDataReader.update(fragment, metadata);
+                fragment.setHeader(dataReader.getHeader(metadata, fragment.getObject()));
+                fragment.setRows(dataReader.getRows(metadata, fragment.getObject()));
             }
         }
         repaint();

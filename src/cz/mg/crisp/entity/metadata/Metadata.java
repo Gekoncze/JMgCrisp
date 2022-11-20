@@ -10,10 +10,23 @@ import cz.mg.crisp.services.MetadataFactory;
 
 @SuppressWarnings("rawtypes")
 public @Utility class Metadata {
-    private Map<Class, ClassMetadata> map = new Map<>(1000);
     private MetadataFactory metadataFactory;
+    private Map<Class, ClassMetadata> map = new Map<>(1000);
 
     public Metadata() {
+    }
+
+    public Metadata(MetadataFactory metadataFactory) {
+        this.metadataFactory = metadataFactory;
+    }
+
+    @Required @Cache
+    public MetadataFactory getMetadataFactory() {
+        return metadataFactory;
+    }
+
+    public void setMetadataFactory(MetadataFactory metadataFactory) {
+        this.metadataFactory = metadataFactory;
     }
 
     @Required @Part
@@ -23,15 +36,6 @@ public @Utility class Metadata {
 
     public void setMap(Map<Class, ClassMetadata> map) {
         this.map = map;
-    }
-
-    @Mandatory @Cache
-    public MetadataFactory getMetadataFactory() {
-        return metadataFactory;
-    }
-
-    public void setMetadataFactory(MetadataFactory metadataFactory) {
-        this.metadataFactory = metadataFactory;
     }
 
     public @Mandatory ClassMetadata get(@Mandatory Object object) {

@@ -5,7 +5,9 @@ import cz.mg.c.CLibrary;
 import cz.mg.c.CObject;
 import cz.mg.c.CPointer;
 import cz.mg.crisp.entity.*;
+import cz.mg.crisp.entity.metadata.Metadata;
 import cz.mg.crisp.services.ReferencePositionService;
+import cz.mg.crisp.services.cobject.CObjectMetadataFactory;
 import cz.mg.crisp.ui.CrispWindow;
 
 public @Test class ManualCrispWindowTest {
@@ -63,7 +65,7 @@ public @Test class ManualCrispWindowTest {
         ReferencePositionService.getInstance().computePositionsForSelectedFragmentReferences(scene);
         firstFragment.setSelected(false);
 
-        CrispWindow window = new CrispWindow();
+        CrispWindow window = new CrispWindow(new Metadata(CObjectMetadataFactory.getInstance()));
         window.getScenePanel().setScene(scene);
         window.setVisible(true);
     }
