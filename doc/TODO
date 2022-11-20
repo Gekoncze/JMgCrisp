@@ -1,1 +1,5 @@
+in CObjectMetadataFactory and TestMetadataFactory
+    think how to handle pointers
+    how to create references from pointers or non-pointers
+
 add properties panel action for reference fields - open target
