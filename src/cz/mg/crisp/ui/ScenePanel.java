@@ -47,6 +47,7 @@ public @Utility class ScenePanel extends JPanel {
     private @Optional Scene scene;
     private @Optional Action action;
     private @Mandatory GlobalPoint mouse = new GlobalPoint();
+    private @Optional FragmentSingleSelectListener fragmentSingleSelectListener;
 
     public ScenePanel(@Mandatory Metadata metadata) {
         this.metadata = metadata;
@@ -68,6 +69,14 @@ public @Utility class ScenePanel extends JPanel {
         this.scene = scene;
         refreshFragmentData();
         cancel();
+    }
+
+    public @Optional FragmentSingleSelectListener getFragmentSingleSelectListener() {
+        return fragmentSingleSelectListener;
+    }
+
+    public void setFragmentSingleSelectListener(@Optional FragmentSingleSelectListener fragmentSingleSelectListener) {
+        this.fragmentSingleSelectListener = fragmentSingleSelectListener;
     }
 
     public void cancel() {
@@ -107,6 +116,7 @@ public @Utility class ScenePanel extends JPanel {
             if (event.getButton() == MouseEvent.BUTTON1) {
                 boolean incremental = event.isControlDown();
                 boolean range = event.isShiftDown();
+                Fragment[] singleSelectFragment = new Fragment[1];
 
                 if (range) {
                     action = new RangeSelectionAction(scene, mouse);
@@ -114,8 +124,12 @@ public @Utility class ScenePanel extends JPanel {
                     action = new FragmentResizeAction(scene, mouse);
                 } else if (selectionService.isSelectedAt(scene, mouse) && !incremental) {
                     action = new FragmentMoveAction(scene, mouse);
-                } else if (!selectionService.select(scene, mouse, incremental)) {
+                } else if (!selectionService.select(scene, mouse, incremental, singleSelectFragment)) {
                     action = new CameraMoveAction(scene.getCamera(), mouse);
+                }
+
+                if (fragmentSingleSelectListener != null) {
+                    fragmentSingleSelectListener.onFragmentSelected(singleSelectFragment[0]);
                 }
 
                 updateCursor(event);
@@ -221,5 +235,9 @@ public @Utility class ScenePanel extends JPanel {
         if (action != null) {
             action.draw(g);
         }
+    }
+
+    public interface FragmentSingleSelectListener {
+        void onFragmentSelected(@Optional Fragment fragment);
     }
 }

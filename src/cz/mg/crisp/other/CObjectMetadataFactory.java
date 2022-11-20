@@ -1,4 +1,4 @@
-package cz.mg.crisp.services.cobject;
+package cz.mg.crisp.other;
 
 import cz.mg.annotations.classes.Service;
 import cz.mg.annotations.requirement.Mandatory;

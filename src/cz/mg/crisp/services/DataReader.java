@@ -22,23 +22,28 @@ public @Service class DataReader {
     }
 
     public @Mandatory String getHeader(@Mandatory Metadata metadata, @Mandatory Object object) {
-        ClassMetadata classMetadata = metadata.get(object);
-        String name = classMetadata.getName();
-        String identity = getObjectIdentity(metadata, object);
+        String name = getName(metadata, object);
+        String identity = getIdentity(metadata, object);
         return name + " " + identity;
     }
 
     public @Mandatory List<String> getRows(@Mandatory Metadata metadata, @Mandatory Object object) {
-        ClassMetadata classMetadata = metadata.get(object);
         List<String> rows = new List<>();
-        for (FieldMetadata fieldMetadata : classMetadata.getFields()) {
-            rows.addLast(getRow(metadata, fieldMetadata, object));
+        if (metadata.getMetadataFactory().isCompatible(object.getClass())) {
+            ClassMetadata classMetadata = metadata.get(object);
+            for (FieldMetadata fieldMetadata : classMetadata.getFields()) {
+                rows.addLast(getRow(metadata, fieldMetadata, object));
+            }
         }
         return rows;
     }
 
     public @Mandatory String getRow(@Mandatory Metadata metadata, @Mandatory Object object, int i) {
-        return getRow(metadata, metadata.get(object).getFields().get(i), object);
+        if (metadata.getMetadataFactory().isCompatible(object.getClass())) {
+            return getRow(metadata, metadata.get(object).getFields().get(i), object);
+        } else {
+            return "";
+        }
     }
 
     private @Mandatory String getRow(
@@ -50,7 +55,15 @@ public @Service class DataReader {
         return fieldMetadata.getName() + ": " + stringValue;
     }
 
-    private @Mandatory String getObjectIdentity(@Mandatory Metadata metadata, @Mandatory Object object) {
+    private @Mandatory String getName(@Mandatory Metadata metadata, @Mandatory Object object) {
+        if (metadata.getMetadataFactory().isCompatible(object.getClass())) {
+            return metadata.get(object).getName();
+        } else {
+            return object.getClass().getSimpleName();
+        }
+    }
+
+    private @Mandatory String getIdentity(@Mandatory Metadata metadata, @Mandatory Object object) {
         if (metadata.getMetadataFactory().isCompatible(object.getClass())) {
             Long identity = metadata.getMetadataFactory().getIdentity(object);
             if (identity != null) {
@@ -68,7 +81,7 @@ public @Service class DataReader {
             if (isPrimitive(object.getClass())) {
                 return object.toString();
             } else {
-                return getObjectIdentity(metadata, object);
+                return getIdentity(metadata, object);
             }
         } else {
             return "null";

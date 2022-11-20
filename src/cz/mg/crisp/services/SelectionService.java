@@ -58,7 +58,12 @@ public @Service class SelectionService {
         return distance <= radius;
     }
 
-    public boolean select(@Mandatory Scene scene, @Mandatory GlobalPoint point, boolean incremental) {
+    public boolean select(
+        @Mandatory Scene scene,
+        @Mandatory GlobalPoint point,
+        boolean incremental,
+        @Mandatory Fragment[] singleSelectFragment
+    ) {
         LocalPoint local = coordinateService.globalToLocal(scene.getCamera(), point);
 
         if (incremental) {
@@ -76,6 +81,7 @@ public @Service class SelectionService {
             for (Fragment fragment : scene.getFragments()) {
                 if (isInside(local, fragment)) {
                     fragment.setSelected(true);
+                    singleSelectFragment[0] = fragment;
                     return true;
                 }
             }
