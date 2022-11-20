@@ -32,27 +32,28 @@ public @Service class DataReader {
         if (metadata.getMetadataFactory().isCompatible(object.getClass())) {
             ClassMetadata classMetadata = metadata.get(object);
             for (FieldMetadata fieldMetadata : classMetadata.getFields()) {
-                rows.addLast(getRow(metadata, fieldMetadata, object));
+                rows.addLast(getRow(metadata, fieldMetadata.getName(), fieldMetadata.getValue(object)));
             }
         }
         return rows;
     }
 
-    public @Mandatory String getRow(@Mandatory Metadata metadata, @Mandatory Object object, int i) {
-        if (metadata.getMetadataFactory().isCompatible(object.getClass())) {
-            return getRow(metadata, metadata.get(object).getFields().get(i), object);
-        } else {
-            return "";
-        }
+    public @Mandatory String getRow(
+        @Mandatory Metadata metadata,
+        @Mandatory Object object,
+        @Optional Object fieldValue,
+        int i
+    ) {
+        return getRow(metadata, metadata.get(object).getFields().get(i).getName(), fieldValue);
     }
 
     private @Mandatory String getRow(
         @Mandatory Metadata metadata,
-        @Mandatory FieldMetadata fieldMetadata,
-        @Mandatory Object object
+        @Mandatory String name,
+        @Optional Object fieldValue
     ) {
-        String stringValue = valueToString(metadata, fieldMetadata.getValue(object));
-        return fieldMetadata.getName() + ": " + stringValue;
+        String stringValue = valueToString(metadata, fieldValue);
+        return name + ": " + stringValue;
     }
 
     private @Mandatory String getName(@Mandatory Metadata metadata, @Mandatory Object object) {

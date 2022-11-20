@@ -3,7 +3,6 @@ package cz.mg.crisp.ui;
 import cz.mg.annotations.classes.Utility;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
-import cz.mg.crisp.entity.metadata.ClassMetadata;
 import cz.mg.crisp.entity.metadata.Metadata;
 import cz.mg.crisp.services.DataReader;
 
@@ -30,7 +29,7 @@ public @Utility class PropertiesList extends JList<Object> {
 
     private void rebuild() {
         setModel(new MetadataListModel(metadata, object));
-        setCellRenderer(new MetadataCellRenderer(metadata));
+        setCellRenderer(new MetadataCellRenderer(metadata, object));
     }
 
     private static class MetadataListModel implements ListModel<Object> {
@@ -45,8 +44,7 @@ public @Utility class PropertiesList extends JList<Object> {
         @Override
         public int getSize() {
             if (object != null) {
-                ClassMetadata classMetadata = metadata.get(object);
-                return classMetadata.getFields().count();
+                return metadata.get(object).getFields().count();
             } else {
                 return 0;
             }
@@ -55,8 +53,7 @@ public @Utility class PropertiesList extends JList<Object> {
         @Override
         public Object getElementAt(int i) {
             if (object != null) {
-                ClassMetadata classMetadata = metadata.get(object);
-                return classMetadata.getFields().get(i).getValue(object);
+                return metadata.get(object).getFields().get(i).getValue(object);
             } else {
                 return null;
             }
@@ -74,22 +71,24 @@ public @Utility class PropertiesList extends JList<Object> {
     private static class MetadataCellRenderer implements ListCellRenderer<Object> {
         private final @Mandatory DataReader dataReader = DataReader.getInstance();
         private final @Mandatory Metadata metadata;
+        private final @Optional Object object;
 
-        public MetadataCellRenderer(@Mandatory Metadata metadata) {
+        public MetadataCellRenderer(@Mandatory Metadata metadata, @Optional Object object) {
             this.metadata = metadata;
+            this.object = object;
         }
 
         @Override
         public @Mandatory Component getListCellRendererComponent(
             @Mandatory JList<?> list,
-            @Optional Object object,
+            @Optional Object fieldValue,
             int i,
             boolean selected,
             boolean focused
         ) {
             if (object != null) {
                 JLabel label = new JLabel();
-                label.setText(dataReader.getRow(metadata, object, i));
+                label.setText(dataReader.getRow(metadata, object, fieldValue, i));
                 return label;
             } else {
                 return new JLabel();
