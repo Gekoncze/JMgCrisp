@@ -30,11 +30,11 @@ public @Service class OpenService {
     private OpenService() {
     }
 
-    public void open(@Mandatory Metadata metadata, @Mandatory Scene scene, @Mandatory Fragment parent, @Mandatory Object object) {
-        Fragment existingFragment = getFragment(scene, object);
-        if (existingFragment == null) {
-            Object target = metadata.getMetadataFactory().open(parent.getObject(), object);
-            if (target != null) {
+    public void open(@Mandatory Metadata metadata, @Mandatory Scene scene, @Mandatory Fragment parent, @Mandatory Object field) {
+        Object target = metadata.getMetadataFactory().open(field);
+        if (target != null) {
+            Fragment existingFragment = getFragment(scene, target);
+            if (existingFragment == null) {
                 Fragment targetFragment = fragmentFactory.create(metadata, target);
                 scene.getFragments().addLast(targetFragment);
 
@@ -46,17 +46,17 @@ public @Service class OpenService {
                 referencePositionService.computePositionsForSelectedFragmentReferences(
                     scene, fragment -> fragment == parent || fragment == targetFragment
                 );
-            }
-        } else {
-            Reference existingReference = getReference(scene, parent, existingFragment);
-            if (existingReference == null) {
-                if (existingFragment != parent) {
-                    Reference reference = referenceFactory.create(parent, existingFragment);
-                    scene.getReferences().addLast(reference);
+            } else {
+                Reference existingReference = getReference(scene, parent, existingFragment);
+                if (existingReference == null) {
+                    if (existingFragment != parent) {
+                        Reference reference = referenceFactory.create(parent, existingFragment);
+                        scene.getReferences().addLast(reference);
 
-                    referencePositionService.computePositionsForSelectedFragmentReferences(
-                        scene, fragment -> fragment == parent || fragment == existingFragment
-                    );
+                        referencePositionService.computePositionsForSelectedFragmentReferences(
+                            scene, fragment -> fragment == parent || fragment == existingFragment
+                        );
+                    }
                 }
             }
         }

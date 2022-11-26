@@ -72,13 +72,14 @@ public @Service class CObjectMetadataFactory implements MetadataFactory {
     }
 
     @Override
-    public @Optional Object open(@Mandatory Object parent, @Mandatory Object field) {
-        if (!isCompatible(parent.getClass()) || !isCompatible(field.getClass())) return null;
+    public @Optional Object open(@Mandatory Object field) {
         if (field instanceof CPointer) {
             CPointer pointer = (CPointer) field;
             return pointer.getTarget();
-        } else {
+        } else if (isCompatible(field.getClass())) {
             return field;
+        } else {
+            return null;
         }
     }
 }

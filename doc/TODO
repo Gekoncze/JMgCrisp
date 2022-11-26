@@ -1,1 +1,2 @@
-add reference if it does not exist after open existing fragment from other location - in progress
+bug - reference position service does not work correctly
+    must include also neighbors of selected fragments
