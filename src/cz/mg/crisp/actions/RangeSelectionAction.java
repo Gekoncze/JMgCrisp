@@ -2,10 +2,12 @@ package cz.mg.crisp.actions;
 
 import cz.mg.annotations.classes.Utility;
 import cz.mg.annotations.requirement.Mandatory;
+import cz.mg.annotations.requirement.Optional;
 import cz.mg.crisp.entity.*;
 import cz.mg.crisp.graphics.RangeSelectionActionRenderer;
 import cz.mg.crisp.services.CoordinateService;
 import cz.mg.crisp.services.FragmentSelectionService;
+import cz.mg.crisp.listeners.FragmentSelectListener;
 
 import java.awt.*;
 
@@ -17,11 +19,17 @@ public @Utility class RangeSelectionAction implements Action {
     private final @Mandatory Scene scene;
     private final @Mandatory LocalPoint begin;
     private @Mandatory LocalPoint end;
+    private final @Optional FragmentSelectListener fragmentSelectListener;
 
-    public RangeSelectionAction(@Mandatory Scene scene, @Mandatory GlobalPoint mouse) {
+    public RangeSelectionAction(
+        @Mandatory Scene scene,
+        @Mandatory GlobalPoint mouse,
+        @Optional FragmentSelectListener fragmentSelectListener
+    ) {
         this.scene = scene;
         this.begin = coordinateService.globalToLocal(scene.getCamera(), mouse);
         this.end = new LocalPoint(begin);
+        this.fragmentSelectListener = fragmentSelectListener;
     }
 
     public @Mandatory LocalPoint getBegin() {
@@ -52,6 +60,9 @@ public @Utility class RangeSelectionAction implements Action {
             if (!fragment.isSelected()) {
                 if (fragmentSelectionService.isInsideArea(begin, end, fragment)) {
                     fragment.setSelected(true);
+                    if (fragmentSelectListener != null) {
+                        fragmentSelectListener.onFragmentSelected(fragment);
+                    }
                 }
             }
         }

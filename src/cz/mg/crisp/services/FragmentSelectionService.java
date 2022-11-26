@@ -7,6 +7,7 @@ import cz.mg.crisp.entity.Fragment;
 import cz.mg.crisp.entity.GlobalPoint;
 import cz.mg.crisp.entity.LocalPoint;
 import cz.mg.crisp.entity.Scene;
+import cz.mg.crisp.listeners.FragmentSelectListener;
 
 public @Service class FragmentSelectionService {
     private static @Optional FragmentSelectionService instance;
@@ -58,39 +59,78 @@ public @Service class FragmentSelectionService {
         return distance <= radius;
     }
 
+    public @Optional Fragment getSelectedAt(@Mandatory Scene scene, @Mandatory GlobalPoint point) {
+        LocalPoint local = coordinateService.globalToLocal(scene.getCamera(), point);
+
+        Fragment selectedFragment = null;
+
+        for (Fragment fragment : scene.getFragments()) {
+            if (fragment.isSelected()) {
+                if (isInside(local, fragment)) {
+                    selectedFragment = fragment;
+                }
+            }
+        }
+
+        return selectedFragment;
+    }
+
     public boolean select(
         @Mandatory Scene scene,
         @Mandatory GlobalPoint point,
         boolean incremental,
-        Fragment[] singleSelectFragment
+        @Optional FragmentSelectListener fragmentSelectListener
     ) {
         LocalPoint local = coordinateService.globalToLocal(scene.getCamera(), point);
 
         if (incremental) {
             for (Fragment fragment : scene.getFragments()) {
                 if (isInside(local, fragment)) {
-                    fragment.setSelected(!fragment.isSelected());
+                    switchSelect(fragment, fragmentSelectListener);
                 }
             }
             return true;
         } else {
             for (Fragment fragment : scene.getFragments()) {
-                fragment.setSelected(false);
+                unselect(fragment, fragmentSelectListener);
             }
 
-            singleSelectFragment[0] = null;
+            Fragment selectedFragment = null;
+
             for (Fragment fragment : scene.getFragments()) {
                 if (isInside(local, fragment)) {
-                    singleSelectFragment[0] = fragment;
+                    selectedFragment = fragment;
                 }
             }
 
-            if (singleSelectFragment[0] != null) {
-                singleSelectFragment[0].setSelected(true);
+            if (selectedFragment != null) {
+                select(selectedFragment, fragmentSelectListener);
             }
         }
 
         return false;
+    }
+
+    private void select(@Mandatory Fragment fragment, @Optional FragmentSelectListener fragmentSelectListener) {
+        fragment.setSelected(true);
+        if (fragmentSelectListener != null) {
+            fragmentSelectListener.onFragmentSelected(fragment);
+        }
+    }
+
+    private void unselect(@Mandatory Fragment fragment, @Optional FragmentSelectListener fragmentSelectListener) {
+        fragment.setSelected(false);
+        if (fragmentSelectListener != null) {
+            fragmentSelectListener.onFragmentSelected(null);
+        }
+    }
+
+    private void switchSelect(@Mandatory Fragment fragment, @Optional FragmentSelectListener fragmentSelectListener) {
+        if (fragment.isSelected()) {
+            unselect(fragment, fragmentSelectListener);
+        } else {
+            select(fragment, fragmentSelectListener);
+        }
     }
 
     public boolean isInside(@Mandatory LocalPoint point, @Mandatory Fragment fragment) {

@@ -13,6 +13,7 @@ import cz.mg.crisp.entity.metadata.Metadata;
 import cz.mg.crisp.event.*;
 import cz.mg.crisp.graphics.SceneRenderer;
 import cz.mg.crisp.graphics.SceneRenderingHints;
+import cz.mg.crisp.listeners.FragmentSelectListener;
 import cz.mg.crisp.services.*;
 import cz.mg.crisp.utilities.Timer;
 
@@ -48,7 +49,7 @@ public @Utility class ScenePanel extends JPanel {
     private @Optional Scene scene;
     private @Optional Action action;
     private @Mandatory GlobalPoint mouse = new GlobalPoint();
-    private @Optional FragmentSingleSelectListener fragmentSingleSelectListener;
+    private @Optional FragmentSelectListener fragmentSelectListener;
 
     public ScenePanel(@Mandatory Metadata metadata) {
         this.metadata = metadata;
@@ -73,12 +74,12 @@ public @Utility class ScenePanel extends JPanel {
         cancel();
     }
 
-    public @Optional FragmentSingleSelectListener getFragmentSingleSelectListener() {
-        return fragmentSingleSelectListener;
+    public @Optional FragmentSelectListener getFragmentSingleSelectListener() {
+        return fragmentSelectListener;
     }
 
-    public void setFragmentSingleSelectListener(@Optional FragmentSingleSelectListener fragmentSingleSelectListener) {
-        this.fragmentSingleSelectListener = fragmentSingleSelectListener;
+    public void setFragmentSingleSelectListener(@Optional FragmentSelectListener fragmentSelectListener) {
+        this.fragmentSelectListener = fragmentSelectListener;
     }
 
     public void cancel() {
@@ -124,20 +125,18 @@ public @Utility class ScenePanel extends JPanel {
             if (event.getButton() == MouseEvent.BUTTON1) {
                 boolean incremental = event.isControlDown();
                 boolean range = event.isShiftDown();
-                Fragment[] singleSelectFragment = new Fragment[1];
 
                 if (range) {
-                    action = new RangeSelectionAction(scene, mouse);
+                    action = new RangeSelectionAction(scene, mouse, fragmentSelectListener);
                 } else if(fragmentSelectionService.isSelectedResizableAt(scene, mouse, RESIZE_RADIUS) && !incremental) {
                     action = new FragmentResizeAction(scene, mouse);
                 } else if (fragmentSelectionService.isSelectedAt(scene, mouse) && !incremental) {
+                    if (fragmentSelectListener != null) {
+                        fragmentSelectListener.onFragmentSelected(fragmentSelectionService.getSelectedAt(scene, mouse));
+                    }
                     action = new FragmentMoveAction(scene, mouse);
-                } else if (!fragmentSelectionService.select(scene, mouse, incremental, singleSelectFragment)) {
+                } else if (!fragmentSelectionService.select(scene, mouse, incremental, fragmentSelectListener)) {
                     action = new CameraMoveAction(scene.getCamera(), mouse);
-                }
-
-                if (fragmentSingleSelectListener != null) {
-                    fragmentSingleSelectListener.onFragmentSelected(singleSelectFragment[0]);
                 }
 
                 updateCursor(event);
@@ -243,9 +242,5 @@ public @Utility class ScenePanel extends JPanel {
         if (action != null) {
             action.draw(g);
         }
-    }
-
-    public interface FragmentSingleSelectListener {
-        void onFragmentSelected(@Optional Fragment fragment);
     }
 }
