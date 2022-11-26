@@ -24,7 +24,7 @@ public class TestMetadataFactory implements MetadataFactory {
 
     @Override
     public boolean isCompatible(@Mandatory Class clazz) {
-        return TestClass.class.isAssignableFrom(clazz);
+        return TestObject.class.isAssignableFrom(clazz);
     }
 
     @Override
@@ -57,17 +57,21 @@ public class TestMetadataFactory implements MetadataFactory {
     @Override
     public @Optional Long getIdentity(@Mandatory Object object) {
         checkCompatibility(object.getClass());
+        if (object instanceof TestPointer) {
+            TestPointer pointer = (TestPointer) object;
+            TestClass target = pointer.getTarget();
+            return target != null ? (long) target.getId() : null;
+        }
         return (long) ((TestClass) object).getId();
     }
 
     @Override
     public @Optional Object open(@Mandatory Object parent, @Mandatory Object field) {
-        if (!isCompatible(parent.getClass())) return null;
+        if (!isCompatible(parent.getClass()) || !isCompatible(field.getClass())) return null;
         if (field instanceof TestPointer) {
             TestPointer pointer = (TestPointer) field;
             return pointer.getTarget();
         } else {
-            checkCompatibility(field.getClass());
             return field;
         }
     }

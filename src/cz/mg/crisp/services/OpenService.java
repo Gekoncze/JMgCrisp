@@ -31,7 +31,8 @@ public @Service class OpenService {
     }
 
     public void open(@Mandatory Metadata metadata, @Mandatory Scene scene, @Mandatory Fragment parent, @Mandatory Object object) {
-        if (!isOpened(scene, object)) {
+        Fragment existingFragment = getFragment(scene, object);
+        if (existingFragment == null) {
             Object target = metadata.getMetadataFactory().open(parent.getObject(), object);
             if (target != null) {
                 Fragment targetFragment = fragmentFactory.create(metadata, target);
@@ -41,19 +42,43 @@ public @Service class OpenService {
                 scene.getReferences().addLast(reference);
 
                 targetFragment.setPosition(fragmentPositionService.getNewFragmentPosition(parent));
+
                 referencePositionService.computePositionsForSelectedFragmentReferences(
                     scene, fragment -> fragment == parent || fragment == targetFragment
+                );
+            }
+        } else {
+            Reference existingReference = getReference(scene, parent, existingFragment);
+            if (existingReference == null) {
+                Reference reference = referenceFactory.create(parent, existingFragment);
+                scene.getReferences().addLast(reference);
+
+                referencePositionService.computePositionsForSelectedFragmentReferences(
+                    scene, fragment -> fragment == parent || fragment == existingFragment
                 );
             }
         }
     }
 
-    private boolean isOpened(@Mandatory Scene scene, @Mandatory Object object) {
+    private @Optional Fragment getFragment(@Mandatory Scene scene, @Mandatory Object object) {
         for (Fragment fragment : scene.getFragments()) {
             if (fragment.getObject() == object) {
-                return true;
+                return fragment;
             }
         }
-        return false;
+        return null;
+    }
+
+    private @Optional Reference getReference(
+        @Mandatory Scene scene,
+        @Mandatory Fragment source,
+        @Mandatory Fragment target
+    ) {
+        for (Reference reference : scene.getReferences()) {
+            if (reference.getSource() == source && reference.getTarget() == target) {
+                return reference;
+            }
+        }
+        return null;
     }
 }

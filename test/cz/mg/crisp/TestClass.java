@@ -7,7 +7,7 @@ import cz.mg.annotations.requirement.Required;
 import cz.mg.annotations.storage.Part;
 import cz.mg.annotations.storage.Value;
 
-public @Entity class TestClass {
+public @Entity class TestClass implements TestObject {
     public static final long SIZE = 16;
 
     private int id;

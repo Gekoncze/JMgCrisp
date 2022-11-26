@@ -30,7 +30,7 @@ public @Test class ManualCrispWindowTest {
         innerObject.setDecimal(7.7f);
         innerObject.setText("Inner");
         innerObject.setInner(null);
-        innerObject.setNext(null);
+        innerObject.setNext(new TestPointer<>(referencedObject));
 
         TestClass rootObject = new TestClass();
         rootObject.setId(11111);

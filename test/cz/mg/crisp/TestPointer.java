@@ -4,7 +4,7 @@ import cz.mg.annotations.classes.Entity;
 import cz.mg.annotations.requirement.Optional;
 import cz.mg.annotations.storage.Link;
 
-public @Entity class TestPointer<T extends TestClass> {
+public @Entity class TestPointer<T extends TestClass> implements TestObject {
     private T target;
 
     public TestPointer() {

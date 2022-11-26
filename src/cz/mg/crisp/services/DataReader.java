@@ -70,7 +70,7 @@ public @Service class DataReader {
             if (identity != null) {
                 return identity.toString();
             } else {
-                return Long.toHexString(System.identityHashCode(object));
+                return "null";
             }
         } else {
             return Long.toHexString(System.identityHashCode(object));
