@@ -3,36 +3,65 @@ package cz.mg.crisp.ui;
 import cz.mg.annotations.classes.Utility;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
+import cz.mg.crisp.entity.Fragment;
 import cz.mg.crisp.entity.metadata.Metadata;
+import cz.mg.crisp.event.UserMouseClickedListener;
+import cz.mg.crisp.listeners.FragmentOpenListener;
 import cz.mg.crisp.services.DataReader;
 
 import javax.swing.*;
 import javax.swing.event.ListDataListener;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 
 public @Utility class PropertiesList extends JList<Object> {
     private static final Color SELECTION_COLOR = UIManager.getDefaults().getColor("List.selectionBackground");
 
     private final @Mandatory Metadata metadata;
-    private @Optional Object object;
+    private @Optional Fragment fragment;
+    private @Optional FragmentOpenListener fragmentOpenListener;
 
     public PropertiesList(@Mandatory Metadata metadata) {
         this.metadata = metadata;
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        addMouseListener(new UserMouseClickedListener(this::onMouseClicked));
     }
 
-    public @Optional Object getObject() {
-        return object;
+    public @Optional Fragment getFragment() {
+        return fragment;
     }
 
-    public void setObject(@Optional Object object) {
-        this.object = object;
+    public void setFragment(@Optional Fragment fragment) {
+        this.fragment = fragment;
         rebuild();
     }
 
+    public @Optional FragmentOpenListener getFragmentOpenListener() {
+        return fragmentOpenListener;
+    }
+
+    public void setFragmentOpenListener(@Optional FragmentOpenListener fragmentOpenListener) {
+        this.fragmentOpenListener = fragmentOpenListener;
+    }
+
     private void rebuild() {
+        Object object = fragment != null ? fragment.getObject() : null;
         setModel(new MetadataListModel(metadata, object));
         setCellRenderer(new MetadataCellRenderer(metadata, object));
+    }
+
+    private void onMouseClicked(@Mandatory MouseEvent event) {
+        if (event.getClickCount() == 2) {
+            int index = locationToIndex(event.getPoint());
+            if (index >= 0 && index < getModel().getSize()) {
+                Object field = getModel().getElementAt(index);
+                if (fragmentOpenListener != null) {
+                    if (fragment != null) {
+                        fragmentOpenListener.onFragmentOpened(fragment, field);
+                    }
+                }
+            }
+        }
     }
 
     private static class MetadataListModel implements ListModel<Object> {

@@ -6,6 +6,7 @@ import cz.mg.annotations.requirement.Optional;
 import cz.mg.crisp.Version;
 import cz.mg.crisp.entity.Fragment;
 import cz.mg.crisp.entity.metadata.Metadata;
+import cz.mg.crisp.services.OpenService;
 
 import javax.swing.*;
 
@@ -17,12 +18,17 @@ public @Utility class CrispWindow extends JFrame {
     private static final int DEFAULT_HEIGHT = 768;
     private static final int DEFAULT_PROPERTIES_WIDTH = 256;
 
+    private final @Mandatory OpenService openService = OpenService.getInstance();
+
+    private final @Mandatory Metadata metadata;
     private final @Mandatory MainMenu mainMenu;
     private final @Mandatory SplitPanel splitPanel;
     private final @Mandatory ScenePanel scenePanel;
     private final @Mandatory PropertiesList propertiesList;
 
     public CrispWindow(@Mandatory Metadata metadata) {
+        this.metadata = metadata;
+
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setTitle(TITLE);
         setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -32,9 +38,10 @@ public @Utility class CrispWindow extends JFrame {
         setJMenuBar(mainMenu);
 
         scenePanel = new ScenePanel(metadata);
-        propertiesList = new PropertiesList(metadata);
-
         scenePanel.setFragmentSingleSelectListener(this::onFragmentSelected);
+
+        propertiesList = new PropertiesList(metadata);
+        propertiesList.setFragmentOpenListener(this::onFragmentOpened);
 
         splitPanel = new SplitPanel();
         splitPanel.setLeftComponent(scenePanel);
@@ -61,6 +68,15 @@ public @Utility class CrispWindow extends JFrame {
     }
 
     private void onFragmentSelected(@Optional Fragment fragment) {
-        propertiesList.setObject(fragment != null ? fragment.getObject() : null);
+        propertiesList.setFragment(fragment);
+    }
+
+    private void onFragmentOpened(@Mandatory Fragment parent, @Optional Object object) {
+        if (object != null) {
+            if (scenePanel.getScene() != null) {
+                openService.open(metadata, scenePanel.getScene(), parent, object);
+                repaint();
+            }
+        }
     }
 }

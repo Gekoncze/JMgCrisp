@@ -14,7 +14,7 @@ public @Service class ReferenceFactory {
 
     public static @Mandatory ReferenceFactory getInstance() {
         if (instance == null) {
-            instance = getInstance();
+            instance = new ReferenceFactory();
         }
         return instance;
     }
