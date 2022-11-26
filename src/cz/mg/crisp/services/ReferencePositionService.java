@@ -11,6 +11,8 @@ import cz.mg.collections.pair.ReadablePair;
 import cz.mg.crisp.entity.*;
 
 public @Service class ReferencePositionService {
+    private static final int CACHE = 100;
+
     private static @Optional ReferencePositionService instance;
 
     public static @Mandatory ReferencePositionService getInstance() {
@@ -33,22 +35,48 @@ public @Service class ReferencePositionService {
     }
 
     public void computePositionsForSelectedFragmentReferences(@Mandatory Scene scene, @Mandatory Selector selector) {
-        Map<Fragment, Rectangle> rectangles = new Map<>(100);
-        computeRectangles(scene, rectangles, selector);
+        Map<Fragment, Boolean> affectedFragments = computeAffectedFragments(scene, selector);
 
-        Map<Fragment, Array<List<Reference>>> sides = new Map<>(100);
-        computeSides(scene, sides, rectangles, selector);
+        Map<Fragment, Rectangle> rectangles = new Map<>(CACHE);
+        computeRectangles(scene, rectangles, affectedFragments);
+
+        Map<Fragment, Array<List<Reference>>> sides = new Map<>(CACHE);
+        computeSides(scene, sides, rectangles, affectedFragments);
 
         computePositions(sides, rectangles);
+    }
+
+    private @Mandatory Map<Fragment, Boolean> computeAffectedFragments(
+        @Mandatory Scene scene,
+        @Mandatory Selector selector
+    ) {
+        Map<Fragment, Boolean> map = new Map<>(CACHE);
+
+        for (Fragment fragment : scene.getFragments()) {
+            if (selector.isSelected(fragment)) {
+                map.set(fragment, true);
+            }
+        }
+
+        for (Reference reference : scene.getReferences()) {
+            if (selector.isSelected(reference.getSource()) || selector.isSelected(reference.getTarget())) {
+                map.set(reference.getSource(), true);
+                map.set(reference.getTarget(), true);
+            }
+        }
+
+        return map;
     }
 
     private void computeRectangles(
         @Mandatory Scene scene,
         @Mandatory Map<Fragment, Rectangle> rectangles,
-        @Mandatory Selector selector
+        @Mandatory Map<Fragment, Boolean> affectedFragments
     ) {
         for (Reference reference : scene.getReferences()) {
-            if (selector.isSelected(reference.getSource()) || selector.isSelected(reference.getTarget())) {
+            boolean sourceAffected = affectedFragments.getOptional(reference.getSource()) != null;
+            boolean targetAffected = affectedFragments.getOptional(reference.getTarget()) != null;
+            if (sourceAffected || targetAffected) {
                 computeRectangle(reference.getSource(), rectangles);
                 computeRectangle(reference.getTarget(), rectangles);
             }
@@ -112,10 +140,12 @@ public @Service class ReferencePositionService {
         @Mandatory Scene scene,
         @Mandatory Map<Fragment, Array<List<Reference>>> sides,
         @Mandatory Map<Fragment, Rectangle> rectangles,
-        @Mandatory Selector selector
+        @Mandatory Map<Fragment, Boolean> affectedFragments
     ) {
         for (Reference reference : scene.getReferences()) {
-            if (selector.isSelected(reference.getSource()) || selector.isSelected(reference.getTarget())) {
+            boolean sourceAffected = affectedFragments.getOptional(reference.getSource()) != null;
+            boolean targetAffected = affectedFragments.getOptional(reference.getTarget()) != null;
+            if (sourceAffected || targetAffected) {
                 computeSide(reference, sides, rectangles);
             }
         }

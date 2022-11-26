@@ -1,2 +1,1 @@
-bug - reference position service does not work correctly
-    must include also neighbors of selected fragments
+remove dependency on CObject

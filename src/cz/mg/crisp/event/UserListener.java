@@ -16,6 +16,8 @@ public @Utility interface UserListener {
                 e.getClass().getSimpleName(),
                 JOptionPane.ERROR_MESSAGE
             );
+
+            e.printStackTrace();
         }
     }
 }
