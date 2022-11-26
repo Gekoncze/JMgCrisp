@@ -40,6 +40,7 @@ public @Utility class ScenePanel extends JPanel {
     private final @Mandatory FragmentSelectionService fragmentSelectionService = FragmentSelectionService.getInstance();
     private final @Mandatory ZoomService zoomService = ZoomService.getInstance();
     private final @Mandatory DataReader dataReader = DataReader.getInstance();
+    private final @Mandatory ReferencePositionService referencePositionService = ReferencePositionService.getInstance();
 
     private final @Mandatory Metadata metadata;
     private final @Mandatory Timer timer = new Timer(DEFAULT_DELAY);
@@ -68,6 +69,7 @@ public @Utility class ScenePanel extends JPanel {
     public void setScene(@Optional Scene scene) {
         this.scene = scene;
         refreshFragmentData();
+        refreshReferencePositions();
         cancel();
     }
 
@@ -93,6 +95,12 @@ public @Utility class ScenePanel extends JPanel {
             }
         }
         repaint();
+    }
+
+    private void refreshReferencePositions() {
+        if (scene != null) {
+            referencePositionService.computePositionsForSelectedFragmentReferences(scene, fragment -> true);
+        }
     }
 
     private void clearSelection() {
