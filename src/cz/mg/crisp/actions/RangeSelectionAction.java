@@ -5,13 +5,13 @@ import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.crisp.entity.*;
 import cz.mg.crisp.graphics.RangeSelectionActionRenderer;
 import cz.mg.crisp.services.CoordinateService;
-import cz.mg.crisp.services.SelectionService;
+import cz.mg.crisp.services.FragmentSelectionService;
 
 import java.awt.*;
 
 public @Utility class RangeSelectionAction implements Action {
     private final CoordinateService coordinateService = CoordinateService.getInstance();
-    private final SelectionService selectionService = SelectionService.getInstance();
+    private final FragmentSelectionService fragmentSelectionService = FragmentSelectionService.getInstance();
     private final RangeSelectionActionRenderer renderer = RangeSelectionActionRenderer.getInstance();
 
     private final @Mandatory Scene scene;
@@ -50,7 +50,7 @@ public @Utility class RangeSelectionAction implements Action {
     private void select() {
         for (Fragment fragment : scene.getFragments()) {
             if (!fragment.isSelected()) {
-                if (selectionService.isInsideArea(begin, end, fragment)) {
+                if (fragmentSelectionService.isInsideArea(begin, end, fragment)) {
                     fragment.setSelected(true);
                 }
             }

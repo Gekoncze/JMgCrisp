@@ -37,7 +37,7 @@ public @Utility class ScenePanel extends JPanel {
 
     private final @Mandatory SceneRenderer sceneRenderer = SceneRenderer.getInstance();
     private final @Mandatory CoordinateService coordinateService = CoordinateService.getInstance();
-    private final @Mandatory SelectionService selectionService = SelectionService.getInstance();
+    private final @Mandatory FragmentSelectionService fragmentSelectionService = FragmentSelectionService.getInstance();
     private final @Mandatory ZoomService zoomService = ZoomService.getInstance();
     private final @Mandatory DataReader dataReader = DataReader.getInstance();
 
@@ -120,11 +120,11 @@ public @Utility class ScenePanel extends JPanel {
 
                 if (range) {
                     action = new RangeSelectionAction(scene, mouse);
-                } else if(selectionService.isSelectedResizableAt(scene, mouse, RESIZE_RADIUS) && !incremental) {
+                } else if(fragmentSelectionService.isSelectedResizableAt(scene, mouse, RESIZE_RADIUS) && !incremental) {
                     action = new FragmentResizeAction(scene, mouse);
-                } else if (selectionService.isSelectedAt(scene, mouse) && !incremental) {
+                } else if (fragmentSelectionService.isSelectedAt(scene, mouse) && !incremental) {
                     action = new FragmentMoveAction(scene, mouse);
-                } else if (!selectionService.select(scene, mouse, incremental, singleSelectFragment)) {
+                } else if (!fragmentSelectionService.select(scene, mouse, incremental, singleSelectFragment)) {
                     action = new CameraMoveAction(scene.getCamera(), mouse);
                 }
 
@@ -208,9 +208,9 @@ public @Utility class ScenePanel extends JPanel {
 
             if (range) {
                 setCursor(DEFAULT_CURSOR);
-            } else if (selectionService.isSelectedResizableAt(scene, mouse, RESIZE_RADIUS) && !incremental) {
+            } else if (fragmentSelectionService.isSelectedResizableAt(scene, mouse, RESIZE_RADIUS) && !incremental) {
                 setCursor(RESIZE_CURSOR);
-            } else if (selectionService.isSelectedAt(scene, mouse) && !incremental) {
+            } else if (fragmentSelectionService.isSelectedAt(scene, mouse) && !incremental) {
                 setCursor(MOVE_CURSOR);
             } else {
                 setCursor(DEFAULT_CURSOR);

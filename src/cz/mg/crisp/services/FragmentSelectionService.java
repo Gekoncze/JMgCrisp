@@ -8,12 +8,12 @@ import cz.mg.crisp.entity.GlobalPoint;
 import cz.mg.crisp.entity.LocalPoint;
 import cz.mg.crisp.entity.Scene;
 
-public @Service class SelectionService {
-    private static @Optional SelectionService instance;
+public @Service class FragmentSelectionService {
+    private static @Optional FragmentSelectionService instance;
 
-    public static @Mandatory SelectionService getInstance() {
+    public static @Mandatory FragmentSelectionService getInstance() {
         if (instance == null) {
-            instance = new SelectionService();
+            instance = new FragmentSelectionService();
             instance.coordinateService = CoordinateService.getInstance();
         }
         return instance;
@@ -21,7 +21,7 @@ public @Service class SelectionService {
 
     private CoordinateService coordinateService;
 
-    private SelectionService() {
+    private FragmentSelectionService() {
     }
 
     public boolean isSelectedAt(@Mandatory Scene scene, @Mandatory GlobalPoint point) {
@@ -62,7 +62,7 @@ public @Service class SelectionService {
         @Mandatory Scene scene,
         @Mandatory GlobalPoint point,
         boolean incremental,
-        @Mandatory Fragment[] singleSelectFragment
+        Fragment[] singleSelectFragment
     ) {
         LocalPoint local = coordinateService.globalToLocal(scene.getCamera(), point);
 
@@ -78,12 +78,15 @@ public @Service class SelectionService {
                 fragment.setSelected(false);
             }
 
+            singleSelectFragment[0] = null;
             for (Fragment fragment : scene.getFragments()) {
                 if (isInside(local, fragment)) {
-                    fragment.setSelected(true);
                     singleSelectFragment[0] = fragment;
-                    return true;
                 }
+            }
+
+            if (singleSelectFragment[0] != null) {
+                singleSelectFragment[0].setSelected(true);
             }
         }
 
