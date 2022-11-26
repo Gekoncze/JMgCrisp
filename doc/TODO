@@ -1,3 +1,1 @@
 add reference if it does not exist after open existing fragment from other location - in progress
-handle reference with same source and target
-handle primitive types during open action

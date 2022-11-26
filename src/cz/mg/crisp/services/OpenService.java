@@ -50,12 +50,14 @@ public @Service class OpenService {
         } else {
             Reference existingReference = getReference(scene, parent, existingFragment);
             if (existingReference == null) {
-                Reference reference = referenceFactory.create(parent, existingFragment);
-                scene.getReferences().addLast(reference);
+                if (existingFragment != parent) {
+                    Reference reference = referenceFactory.create(parent, existingFragment);
+                    scene.getReferences().addLast(reference);
 
-                referencePositionService.computePositionsForSelectedFragmentReferences(
-                    scene, fragment -> fragment == parent || fragment == existingFragment
-                );
+                    referencePositionService.computePositionsForSelectedFragmentReferences(
+                        scene, fragment -> fragment == parent || fragment == existingFragment
+                    );
+                }
             }
         }
     }

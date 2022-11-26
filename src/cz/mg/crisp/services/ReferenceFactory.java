@@ -23,6 +23,12 @@ public @Service class ReferenceFactory {
     }
 
     public @Mandatory Reference create(@Mandatory Fragment source, @Mandatory Fragment target) {
+        if (source == target) {
+            throw new IllegalArgumentException(
+                "Reference source fragment cannot be the same object as target fragment."
+            );
+        }
+
         Reference reference = new Reference();
         reference.setSource(source);
         reference.setTarget(target);
