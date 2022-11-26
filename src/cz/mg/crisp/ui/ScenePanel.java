@@ -24,7 +24,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
 public @Utility class ScenePanel extends JPanel {
-    private static final RenderingHints RENDEREING_HINTS = new SceneRenderingHints();
+    private static final RenderingHints RENDERING_HINTS = new SceneRenderingHints();
     private static final Color BACKGROUND_COLOR = Color.WHITE;
 
     private static final int DEFAULT_FPS_LIMIT = 25;
@@ -224,7 +224,7 @@ public @Utility class ScenePanel extends JPanel {
     }
 
     private void draw(@Mandatory Graphics2D g) {
-        g.setRenderingHints(RENDEREING_HINTS);
+        g.setRenderingHints(RENDERING_HINTS);
         g.setColor(BACKGROUND_COLOR);
         g.fillRect(0, 0, getWidth(), getHeight());
 

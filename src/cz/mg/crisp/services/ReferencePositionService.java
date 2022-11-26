@@ -1,6 +1,7 @@
 package cz.mg.crisp.services;
 
 import cz.mg.annotations.classes.Service;
+import cz.mg.annotations.classes.Utility;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
 import cz.mg.collections.array.Array;
@@ -28,21 +29,26 @@ public @Service class ReferencePositionService {
     }
 
     public void computePositionsForSelectedFragmentReferences(@Mandatory Scene scene) {
+        computePositionsForSelectedFragmentReferences(scene, Fragment::isSelected);
+    }
+
+    public void computePositionsForSelectedFragmentReferences(@Mandatory Scene scene, @Mandatory Selector selector) {
         Map<Fragment, Rectangle> rectangles = new Map<>(100);
-        computeRectangles(scene, rectangles);
+        computeRectangles(scene, rectangles, selector);
 
         Map<Fragment, Array<List<Reference>>> sides = new Map<>(100);
-        computeSides(scene, sides, rectangles);
+        computeSides(scene, sides, rectangles, selector);
 
         computePositions(sides, rectangles);
     }
 
     private void computeRectangles(
         @Mandatory Scene scene,
-        @Mandatory Map<Fragment, Rectangle> rectangles
+        @Mandatory Map<Fragment, Rectangle> rectangles,
+        @Mandatory Selector selector
     ) {
         for (Reference reference : scene.getReferences()) {
-            if (reference.getSource().isSelected() || reference.getTarget().isSelected()) {
+            if (selector.isSelected(reference.getSource()) || selector.isSelected(reference.getTarget())) {
                 computeRectangle(reference.getSource(), rectangles);
                 computeRectangle(reference.getTarget(), rectangles);
             }
@@ -105,10 +111,11 @@ public @Service class ReferencePositionService {
     private void computeSides(
         @Mandatory Scene scene,
         @Mandatory Map<Fragment, Array<List<Reference>>> sides,
-        @Mandatory Map<Fragment, Rectangle> rectangles
+        @Mandatory Map<Fragment, Rectangle> rectangles,
+        @Mandatory Selector selector
     ) {
         for (Reference reference : scene.getReferences()) {
-            if (reference.getSource().isSelected() || reference.getTarget().isSelected()) {
+            if (selector.isSelected(reference.getSource()) || selector.isSelected(reference.getTarget())) {
                 computeSide(reference, sides, rectangles);
             }
         }
@@ -191,5 +198,9 @@ public @Service class ReferencePositionService {
         BOTTOM,
         LEFT,
         RIGHT
+    }
+
+    public @Utility interface Selector {
+        boolean isSelected(@Mandatory Fragment fragment);
     }
 }

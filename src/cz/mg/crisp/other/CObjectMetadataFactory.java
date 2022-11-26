@@ -4,6 +4,7 @@ import cz.mg.annotations.classes.Service;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
 import cz.mg.c.CObject;
+import cz.mg.c.CPointer;
 import cz.mg.crisp.entity.metadata.ClassMetadata;
 import cz.mg.crisp.entity.metadata.FieldMetadata;
 import cz.mg.crisp.services.MetadataFactory;
@@ -62,5 +63,16 @@ public @Service class CObjectMetadataFactory implements MetadataFactory {
     public @Optional Long getIdentity(@Mandatory Object object) {
         checkCompatibility(object.getClass());
         return ((CObject)object).getAddress();
+    }
+
+    @Override
+    public @Optional Object open(@Mandatory Object parent, @Mandatory Object field) {
+        if (!isCompatible(parent.getClass()) || !isCompatible(field.getClass())) return null;
+        if (field instanceof CPointer) {
+            CPointer pointer = (CPointer) field;
+            return pointer.getTarget();
+        } else {
+            return field;
+        }
     }
 }

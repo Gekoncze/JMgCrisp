@@ -59,4 +59,15 @@ public class TestMetadataFactory implements MetadataFactory {
         checkCompatibility(object.getClass());
         return (long) ((TestClass) object).getId();
     }
+
+    @Override
+    public @Optional Object open(@Mandatory Object parent, @Mandatory Object field) {
+        if (!isCompatible(parent.getClass()) || !isCompatible(field.getClass())) return null;
+        if (field instanceof TestPointer) {
+            TestPointer pointer = (TestPointer) field;
+            return pointer.getTarget();
+        } else {
+            return field;
+        }
+    }
 }

@@ -8,12 +8,14 @@ import cz.mg.crisp.entity.metadata.ClassMetadata;
 @SuppressWarnings("rawtypes")
 public @Service interface MetadataFactory {
     boolean isCompatible(@Mandatory Class clazz);
-    @Mandatory ClassMetadata create(@Mandatory Class clazz);
-    @Optional Long getIdentity(@Mandatory Object object);
 
     default void checkCompatibility(@Mandatory Class clazz) {
         if (!isCompatible(clazz)) {
             throw new IllegalArgumentException("Incompatible class " + clazz.getSimpleName() + ".");
         }
     }
+
+    @Mandatory ClassMetadata create(@Mandatory Class clazz);
+    @Optional Long getIdentity(@Mandatory Object object);
+    @Optional Object open(@Mandatory Object parent, @Mandatory Object field);
 }

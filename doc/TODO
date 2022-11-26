@@ -1,5 +1,3 @@
-in CObjectMetadataFactory and TestMetadataFactory
-    think how to handle pointers
-    how to create references from pointers or non-pointers
-
+use fragment and reference factory in test (or open service)
 add properties panel action for reference fields - open target
+when two fragments overlap, is the last one selected?
