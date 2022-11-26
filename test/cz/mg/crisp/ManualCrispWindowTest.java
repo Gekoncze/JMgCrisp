@@ -1,53 +1,44 @@
 package cz.mg.crisp;
 
 import cz.mg.annotations.classes.Test;
-import cz.mg.crisp.entity.Fragment;
-import cz.mg.crisp.entity.Scene;
-import cz.mg.crisp.entity.metadata.Metadata;
-import cz.mg.crisp.services.FragmentFactory;
-import cz.mg.crisp.ui.CrispWindow;
+import cz.mg.annotations.requirement.Mandatory;
+import cz.mg.crisp.services.CrispWindowFactory;
 
 public @Test class ManualCrispWindowTest {
     public static void main(String[] args) {
         System.out.print("Running " + ManualCrispWindowTest.class.getSimpleName() + " ... ");
-        test();
+        new ManualCrispWindowTest().test();
         System.out.println("OK");
     }
 
-    private static void test() {
-        TestMetadataFactory testMetadataFactory = TestMetadataFactory.getInstance();
-        FragmentFactory fragmentFactory = FragmentFactory.getInstance();
+    private final @Mandatory TestMetadataFactory testMetadataFactory = TestMetadataFactory.getInstance();
+    private final @Mandatory CrispWindowFactory crispWindowFactory = CrispWindowFactory.getInstance();
 
-        Metadata metadata = new Metadata();
-        metadata.setMetadataFactory(testMetadataFactory);
+    private ManualCrispWindowTest() {
+    }
 
-        TestClass secondTestObject = new TestClass();
-        secondTestObject.setId(22222);
-        secondTestObject.setDecimal(2.2f);
-        secondTestObject.setText("Second");
-        secondTestObject.setInner(null);
-        secondTestObject.setNext(new TestPointer<>());
+    private void test() {
+        TestClass referencedObject = new TestClass();
+        referencedObject.setId(22222);
+        referencedObject.setDecimal(2.2f);
+        referencedObject.setText("Second");
+        referencedObject.setInner(null);
+        referencedObject.setNext(new TestPointer<>());
 
-        TestClass innerTestObject = new TestClass();
-        innerTestObject.setId(77777);
-        innerTestObject.setDecimal(7.7f);
-        innerTestObject.setText("Inner");
-        innerTestObject.setInner(null);
-        innerTestObject.setNext(null);
+        TestClass innerObject = new TestClass();
+        innerObject.setId(77777);
+        innerObject.setDecimal(7.7f);
+        innerObject.setText("Inner");
+        innerObject.setInner(null);
+        innerObject.setNext(null);
 
-        TestClass firstTestObject = new TestClass();
-        firstTestObject.setId(11111);
-        firstTestObject.setDecimal(null);
-        firstTestObject.setText("First");
-        firstTestObject.setInner(innerTestObject);
-        firstTestObject.setNext(new TestPointer<>(secondTestObject));
+        TestClass rootObject = new TestClass();
+        rootObject.setId(11111);
+        rootObject.setDecimal(null);
+        rootObject.setText("First");
+        rootObject.setInner(innerObject);
+        rootObject.setNext(new TestPointer<>(referencedObject));
 
-        Fragment fragment = fragmentFactory.create(metadata, firstTestObject);
-        Scene scene = new Scene();
-        scene.getFragments().addLast(fragment);
-
-        CrispWindow window = new CrispWindow(metadata);
-        window.getScenePanel().setScene(scene);
-        window.setVisible(true);
+        crispWindowFactory.create(testMetadataFactory, rootObject);
     }
 }
