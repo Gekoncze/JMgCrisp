@@ -3,6 +3,7 @@ package cz.mg.crisp.ui;
 import cz.mg.annotations.classes.Utility;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
+import cz.mg.collections.pair.Pair;
 import cz.mg.crisp.actions.*;
 import cz.mg.crisp.actions.Action;
 import cz.mg.crisp.entity.Fragment;
@@ -13,6 +14,7 @@ import cz.mg.crisp.entity.metadata.Metadata;
 import cz.mg.crisp.event.*;
 import cz.mg.crisp.graphics.SceneRenderer;
 import cz.mg.crisp.graphics.SceneRenderingHints;
+import cz.mg.crisp.listeners.FragmentOpenListener;
 import cz.mg.crisp.listeners.FragmentSelectListener;
 import cz.mg.crisp.services.*;
 import cz.mg.crisp.utilities.Timer;
@@ -51,12 +53,14 @@ public @Utility class ScenePanel extends JPanel {
     private @Optional Action action;
     private @Mandatory GlobalPoint mouse = new GlobalPoint();
     private @Optional FragmentSelectListener fragmentSelectListener;
+    private @Optional FragmentOpenListener fragmentOpenListener;
 
     public ScenePanel(@Mandatory Metadata metadata) {
         this.metadata = metadata;
         setFocusable(true);
         addMouseListener(new UserMousePressedListener(this::onMousePressed));
         addMouseListener(new UserMouseReleasedListener(this::onMouseReleased));
+        addMouseListener(new UserMouseClickedListener(this::onMouseClicked));
         addMouseMotionListener(new UserMouseMovedListener(this::onMouseMoved));
         addMouseMotionListener(new UserMouseDraggedListener(this::onMouseDragged));
         addMouseWheelListener(new UserMouseWheelListener(this::onMouseWheelMoved));
@@ -81,6 +85,14 @@ public @Utility class ScenePanel extends JPanel {
 
     public void setFragmentSingleSelectListener(@Optional FragmentSelectListener fragmentSelectListener) {
         this.fragmentSelectListener = fragmentSelectListener;
+    }
+
+    public @Optional FragmentOpenListener getFragmentOpenListener() {
+        return fragmentOpenListener;
+    }
+
+    public void setFragmentOpenListener(@Optional FragmentOpenListener fragmentOpenListener) {
+        this.fragmentOpenListener = fragmentOpenListener;
     }
 
     public void cancel() {
@@ -126,7 +138,7 @@ public @Utility class ScenePanel extends JPanel {
             if (event.getButton() == MouseEvent.BUTTON1) {
                 boolean incremental = event.isControlDown();
                 boolean range = event.isShiftDown();
-                Fragment closeableFragment = null;
+                Fragment closeableFragment;
 
                 if (range) {
                     action = new RangeSelectionAction(scene, mouse, fragmentSelectListener);
@@ -163,6 +175,44 @@ public @Utility class ScenePanel extends JPanel {
         } else {
             cancel();
         }
+    }
+
+    private void onMouseClicked(@Mandatory MouseEvent event) {
+        if (!event.isControlDown() && !event.isShiftDown()) {
+            if (event.getClickCount() == 1) {
+                if (trySelectField()) {
+                    event.consume();
+                }
+            } else if (event.getClickCount() == 2) {
+                if (tryOpenField()) {
+                    event.consume();
+                }
+            }
+        }
+    }
+
+    private boolean trySelectField() {
+        if (scene != null) {
+            // TODO - select field
+        }
+        return false;
+    }
+
+    private boolean tryOpenField() {
+        if (scene != null) {
+            Pair<Fragment, Integer> fragmentField = fragmentSelectionService.getFragmentFieldAt(scene, mouse);
+            if (fragmentField != null) {
+                if (fragmentOpenListener != null) {
+                    Fragment fragment = fragmentField.getKey();
+                    Object object = fragment.getObject();
+                    Integer index = fragmentField.getValue();
+                    Object field = metadata.get(object).getFields().get(index).getValue(object);
+                    fragmentOpenListener.onFragmentOpened(fragment, field);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void onMouseMoved(@Mandatory MouseEvent event) {

@@ -1,1 +1,3 @@
 add fragment id to properties panel
+select reference when field is clicked + select field itself
+select reference when arrow is clicked + select field itself

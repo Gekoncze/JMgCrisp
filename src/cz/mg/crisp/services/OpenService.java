@@ -8,6 +8,8 @@ import cz.mg.crisp.entity.Reference;
 import cz.mg.crisp.entity.Scene;
 import cz.mg.crisp.entity.metadata.Metadata;
 
+import java.util.Objects;
+
 public @Service class OpenService {
     private static @Optional OpenService instance;
 
@@ -33,7 +35,7 @@ public @Service class OpenService {
     public void open(@Mandatory Metadata metadata, @Mandatory Scene scene, @Mandatory Fragment parent, @Mandatory Object field) {
         Object target = metadata.getMetadataFactory().open(field);
         if (target != null) {
-            Fragment existingFragment = getFragment(scene, target);
+            Fragment existingFragment = getFragment(metadata, scene, target);
             if (existingFragment == null) {
                 Fragment targetFragment = fragmentFactory.create(metadata, target, false);
                 scene.getFragments().addLast(targetFragment);
@@ -62,9 +64,15 @@ public @Service class OpenService {
         }
     }
 
-    private @Optional Fragment getFragment(@Mandatory Scene scene, @Mandatory Object object) {
+    private @Optional Fragment getFragment(
+        @Mandatory Metadata metadata,
+        @Mandatory Scene scene,
+        @Mandatory Object object
+    ) {
         for (Fragment fragment : scene.getFragments()) {
-            if (fragment.getObject() == object) {
+            Long id1 = metadata.getMetadataFactory().getIdentity(fragment.getObject());
+            Long id2 = metadata.getMetadataFactory().getIdentity(object);
+            if (Objects.equals(id1, id2)) {
                 return fragment;
             }
         }

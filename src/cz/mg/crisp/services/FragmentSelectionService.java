@@ -3,8 +3,11 @@ package cz.mg.crisp.services;
 import cz.mg.annotations.classes.Service;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
+import cz.mg.collections.pair.Pair;
 import cz.mg.crisp.entity.*;
 import cz.mg.crisp.listeners.FragmentSelectListener;
+
+import static cz.mg.crisp.services.FragmentPositionService.SECTION_SIZE;
 
 public @Service class FragmentSelectionService {
     private static @Optional FragmentSelectionService instance;
@@ -96,6 +99,27 @@ public @Service class FragmentSelectionService {
         }
 
         return selectedFragment;
+    }
+
+    public @Optional Pair<Fragment, Integer> getFragmentFieldAt(@Mandatory Scene scene, @Mandatory GlobalPoint point) {
+        LocalPoint local = coordinateService.globalToLocal(scene.getCamera(), point);
+        Fragment fragment = null;
+
+        for (Fragment candidate : scene.getFragments()) {
+            if (isInside(local, candidate)) {
+                fragment = candidate;
+            }
+        }
+
+        if (fragment != null) {
+            int y = local.getY() - fragment.getPosition().getY();
+            int index = (y / SECTION_SIZE) - 1;
+            if (index >= 0 && index < fragment.getRows().count()) {
+                return new Pair<>(fragment, index);
+            }
+        }
+
+        return null;
     }
 
     public boolean select(
