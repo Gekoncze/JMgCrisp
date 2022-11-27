@@ -1,3 +1,8 @@
 add fragment id to properties panel
 select reference when field is clicked + select field itself
 select reference when arrow is clicked + select field itself
+add support for validation + highlight invalid objects in red
+cleanup code a little bit
+consider adding some general action framework
+    for one time actions, dynamic actions would just call the one time actions
+    add keyboard shortcuts for one time actions where applicable
