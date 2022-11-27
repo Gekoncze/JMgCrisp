@@ -178,7 +178,7 @@ public @Utility class ScenePanel extends JPanel {
     }
 
     private void onMouseClicked(@Mandatory MouseEvent event) {
-        if (!event.isControlDown() && !event.isShiftDown()) {
+        if (!event.isControlDown() && !event.isShiftDown() && event.getButton() == MouseEvent.BUTTON1) {
             if (event.getClickCount() == 1) {
                 if (trySelectField()) {
                     event.consume();
