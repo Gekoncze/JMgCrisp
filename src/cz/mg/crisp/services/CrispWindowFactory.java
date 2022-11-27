@@ -29,4 +29,15 @@ public @Service class CrispWindowFactory {
         window.setVisible(true);
         return window;
     }
+
+    public void debug(@Mandatory MetadataFactory metadataFactory, @Mandatory Object root) {
+        CrispWindow window = create(metadataFactory, root);
+        while (window.isDisplayable()) {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+    }
 }
