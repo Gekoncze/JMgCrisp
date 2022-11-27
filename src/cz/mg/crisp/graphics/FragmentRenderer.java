@@ -54,7 +54,9 @@ public @Service class FragmentRenderer {
         g.setColor(fragment.isSelected() ? SELECTION_COLOR : FOREGROUND_COLOR);
         g.drawRect(0, 0, fragment.getSize().getX(), fragment.getSize().getY());
         g.drawLine(0, SECTION_SIZE, fragment.getSize().getX(), SECTION_SIZE);
-        drawCloseButton(g, fragment);
+        if (!fragment.isMandatory()) {
+            drawCloseButton(g, fragment);
+        }
     }
 
     private void drawCloseButton(@Mandatory Graphics2D g, @Mandatory Fragment fragment) {

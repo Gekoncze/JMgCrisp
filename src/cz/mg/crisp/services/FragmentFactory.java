@@ -27,7 +27,7 @@ public @Service class FragmentFactory {
     private FragmentFactory() {
     }
 
-    public @Mandatory Fragment create(@Mandatory Metadata metadata, @Mandatory Object object) {
+    public @Mandatory Fragment create(@Mandatory Metadata metadata, @Mandatory Object object, boolean mandatory) {
         Fragment fragment = new Fragment();
         fragment.setObject(object);
         fragment.setHeader(dataReader.getHeader(metadata, object));
@@ -35,6 +35,7 @@ public @Service class FragmentFactory {
         fragment.setPosition(new LocalPoint(DEFAULT_FRAGMENT_POSITION));
         fragment.setSize(new LocalVector(DEFAULT_FRAGMENT_SIZE));
         fragment.setSelected(false);
+        fragment.setMandatory(mandatory);
         return fragment;
     }
 }

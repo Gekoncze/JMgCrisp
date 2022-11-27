@@ -35,7 +35,7 @@ public @Service class OpenService {
         if (target != null) {
             Fragment existingFragment = getFragment(scene, target);
             if (existingFragment == null) {
-                Fragment targetFragment = fragmentFactory.create(metadata, target);
+                Fragment targetFragment = fragmentFactory.create(metadata, target, false);
                 scene.getFragments().addLast(targetFragment);
 
                 Reference reference = referenceFactory.create(parent, targetFragment);

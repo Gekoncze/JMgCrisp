@@ -24,7 +24,7 @@ public @Service class SceneFactory {
 
     public @Mandatory Scene create(@Mandatory Metadata metadata, @Mandatory Object root) {
         Scene scene = new Scene();
-        scene.getFragments().addLast(fragmentFactory.create(metadata, root));
+        scene.getFragments().addLast(fragmentFactory.create(metadata, root, true));
         return scene;
     }
 }

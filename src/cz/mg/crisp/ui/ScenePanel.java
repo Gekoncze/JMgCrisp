@@ -42,6 +42,7 @@ public @Utility class ScenePanel extends JPanel {
     private final @Mandatory ZoomService zoomService = ZoomService.getInstance();
     private final @Mandatory DataReader dataReader = DataReader.getInstance();
     private final @Mandatory ReferencePositionService referencePositionService = ReferencePositionService.getInstance();
+    private final @Mandatory CloseService closeService = CloseService.getInstance();
 
     private final @Mandatory Metadata metadata;
     private final @Mandatory Timer timer = new Timer(DEFAULT_DELAY);
@@ -125,11 +126,14 @@ public @Utility class ScenePanel extends JPanel {
             if (event.getButton() == MouseEvent.BUTTON1) {
                 boolean incremental = event.isControlDown();
                 boolean range = event.isShiftDown();
+                Fragment closeableFragment = null;
 
                 if (range) {
                     action = new RangeSelectionAction(scene, mouse, fragmentSelectListener);
                 } else if(fragmentSelectionService.isSelectedResizableAt(scene, mouse, RESIZE_RADIUS) && !incremental) {
                     action = new FragmentResizeAction(scene, mouse);
+                } else if ((closeableFragment = fragmentSelectionService.getCloseableAt(scene, mouse)) != null) {
+                    closeFragment(closeableFragment);
                 } else if (fragmentSelectionService.isSelectedAt(scene, mouse) && !incremental) {
                     if (fragmentSelectListener != null) {
                         fragmentSelectListener.onFragmentSelected(fragmentSelectionService.getSelectedAt(scene, mouse));
@@ -226,6 +230,13 @@ public @Utility class ScenePanel extends JPanel {
             } else {
                 setCursor(DEFAULT_CURSOR);
             }
+        }
+    }
+
+    private void closeFragment(@Mandatory Fragment fragment) {
+        if (scene != null) {
+            closeService.close(scene, fragment);
+            referencePositionService.computePositionsForSelectedFragmentReferences(scene, f -> true);
         }
     }
 

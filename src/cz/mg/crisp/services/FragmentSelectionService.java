@@ -64,7 +64,7 @@ public @Service class FragmentSelectionService {
         Fragment closeable = null;
 
         for (Fragment fragment : scene.getFragments()) {
-            if (fragment.isSelected()) {
+            if (!fragment.isMandatory()) {
                 if (isCloseableAt(fragment, local)) {
                     closeable = fragment;
                 }

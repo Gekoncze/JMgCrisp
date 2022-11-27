@@ -13,6 +13,7 @@ public @Entity class Fragment {
     private LocalPoint position;
     private LocalVector size;
     private Boolean selected;
+    private Boolean mandatory;
     private String header;
     private List<String> rows;
 
@@ -53,6 +54,15 @@ public @Entity class Fragment {
 
     public void setSelected(Boolean selected) {
         this.selected = selected;
+    }
+
+    @Required @Value
+    public Boolean isMandatory() {
+        return mandatory;
+    }
+
+    public void setMandatory(Boolean mandatory) {
+        this.mandatory = mandatory;
     }
 
     public Boolean getSelected() {
