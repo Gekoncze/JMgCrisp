@@ -183,8 +183,10 @@ public @Utility class ScenePanel extends JPanel {
 
     private void onMouseWheelMoved(@Mandatory MouseWheelEvent event) {
         if (scene != null) {
-            zoomService.zoom(scene.getCamera(), mouse, event.getWheelRotation());
-            repaint();
+            if (event.isControlDown()) {
+                zoomService.zoom(scene.getCamera(), mouse, event.getWheelRotation());
+                repaint();
+            }
         } else {
             cancel();
         }
