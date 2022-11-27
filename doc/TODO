@@ -1,6 +1,13 @@
-add fragment id to properties panel
-select reference when field is clicked + select field itself
-select reference when arrow is clicked + select field itself
+properties panel
+    add fragment id
+    select field and reference when selected in list
+
+field - reference selection
+    select reference when field is clicked + select field itself
+    select reference when arrow is clicked + select field itself
+    consider if field should have its own class, like a FragmentField to be selectable
+    consider if reference should also reference source field
+
 add support for validation + highlight invalid objects in red
 cleanup code a little bit
 consider adding some general action framework
