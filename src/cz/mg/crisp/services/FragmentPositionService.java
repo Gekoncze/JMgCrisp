@@ -6,6 +6,7 @@ import cz.mg.annotations.requirement.Optional;
 import cz.mg.crisp.entity.*;
 
 public @Service class FragmentPositionService {
+    public static final int SECTION_SIZE = 16;
     private static final int NEW_FRAGMENT_POSITION_PADDING = 32;
 
     private static @Optional FragmentPositionService instance;
@@ -45,5 +46,16 @@ public @Service class FragmentPositionService {
             parent.getPosition(),
             new LocalVector(parent.getSize().getX() + NEW_FRAGMENT_POSITION_PADDING, 0)
         );
+    }
+
+    public @Mandatory LocalPoint getCloseButtonPosition(@Mandatory Fragment fragment) {
+        return LocalPoint.move(
+            fragment.getPosition(),
+            new LocalVector(fragment.getSize().getX() - SECTION_SIZE, 0)
+        );
+    }
+
+    public @Mandatory LocalVector getCloseButtonSize(@Mandatory Fragment fragment) {
+        return new LocalVector(SECTION_SIZE, SECTION_SIZE);
     }
 }

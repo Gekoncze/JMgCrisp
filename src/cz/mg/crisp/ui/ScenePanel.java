@@ -219,6 +219,8 @@ public @Utility class ScenePanel extends JPanel {
                 setCursor(DEFAULT_CURSOR);
             } else if (fragmentSelectionService.isSelectedResizableAt(scene, mouse, RESIZE_RADIUS) && !incremental) {
                 setCursor(RESIZE_CURSOR);
+            } else if (fragmentSelectionService.getCloseableAt(scene, mouse) != null) {
+                setCursor(DEFAULT_CURSOR);
             } else if (fragmentSelectionService.isSelectedAt(scene, mouse) && !incremental) {
                 setCursor(MOVE_CURSOR);
             } else {

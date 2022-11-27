@@ -8,12 +8,17 @@ import cz.mg.crisp.entity.Fragment;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 
+import static cz.mg.crisp.services.FragmentPositionService.SECTION_SIZE;
+
 public @Service class FragmentRenderer {
+    private static final int FONT_SIZE = 12;
     private static final Color BACKGROUND_COLOR = new Color(255, 255, 192);
     private static final Color FOREGROUND_COLOR = Color.BLACK;
     private static final Color SELECTION_COLOR = Color.GREEN;
-    private static final Font FONT = new Font("monospaced", Font.PLAIN, 12);
+    private static final Font FONT = new Font("monospaced", Font.PLAIN, FONT_SIZE);
     private static final int PADDING = 4;
+
+    public static final int SECTION_PADDING = (SECTION_SIZE - FONT_SIZE) / 2;
 
     private static @Optional FragmentRenderer instance;
 
@@ -48,24 +53,33 @@ public @Service class FragmentRenderer {
     private void drawForeground(@Mandatory Graphics2D g, @Mandatory Fragment fragment) {
         g.setColor(fragment.isSelected() ? SELECTION_COLOR : FOREGROUND_COLOR);
         g.drawRect(0, 0, fragment.getSize().getX(), fragment.getSize().getY());
+        g.drawLine(0, SECTION_SIZE, fragment.getSize().getX(), SECTION_SIZE);
+        drawCloseButton(g, fragment);
+    }
+
+    private void drawCloseButton(@Mandatory Graphics2D g, @Mandatory Fragment fragment) {
+        int x = fragment.getSize().getX() - SECTION_SIZE;
+        int p = PADDING;
+        g.drawLine(x, 0, x, SECTION_SIZE);
+        g.drawLine(x + p, p, x + SECTION_SIZE - p, SECTION_SIZE - p);
+        g.drawLine(x + p, SECTION_SIZE - p, x + SECTION_SIZE - p, p);
     }
 
     private void drawContent(@Mandatory Graphics2D g, @Mandatory Fragment fragment) {
-        int fontHeight = g.getFontMetrics().getHeight();
-
         g.setFont(FONT);
         g.setColor(FOREGROUND_COLOR);
-        g.drawString(fragment.getHeader(), PADDING, fontHeight);
 
-        int base = fontHeight + PADDING;
+        int y = 0;
+        drawString(g, fragment.getHeader(), PADDING, y + SECTION_PADDING);
 
-        int i = 0;
         for (String row : fragment.getRows()) {
-            i++;
-            g.drawString(row, PADDING, base + PADDING + fontHeight * i);
+            y += SECTION_SIZE;
+            drawString(g, row, PADDING, y + SECTION_PADDING);
         }
+    }
 
-        g.setColor(fragment.isSelected() ? SELECTION_COLOR : FOREGROUND_COLOR);
-        g.drawLine(0, base, fragment.getSize().getX(), base);
+    private void drawString(@Mandatory Graphics2D g, @Mandatory String s, int x, int y) {
+        FontMetrics fm = g.getFontMetrics(FONT);
+        g.drawString(s, x, y + fm.getHeight() - fm.getDescent());
     }
 }

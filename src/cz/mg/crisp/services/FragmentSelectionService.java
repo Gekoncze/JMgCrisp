@@ -3,10 +3,7 @@ package cz.mg.crisp.services;
 import cz.mg.annotations.classes.Service;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
-import cz.mg.crisp.entity.Fragment;
-import cz.mg.crisp.entity.GlobalPoint;
-import cz.mg.crisp.entity.LocalPoint;
-import cz.mg.crisp.entity.Scene;
+import cz.mg.crisp.entity.*;
 import cz.mg.crisp.listeners.FragmentSelectListener;
 
 public @Service class FragmentSelectionService {
@@ -16,11 +13,13 @@ public @Service class FragmentSelectionService {
         if (instance == null) {
             instance = new FragmentSelectionService();
             instance.coordinateService = CoordinateService.getInstance();
+            instance.fragmentPositionService = FragmentPositionService.getInstance();
         }
         return instance;
     }
 
     private CoordinateService coordinateService;
+    private FragmentPositionService fragmentPositionService;
 
     private FragmentSelectionService() {
     }
@@ -57,6 +56,30 @@ public @Service class FragmentSelectionService {
         LocalPoint target = LocalPoint.move(fragment.getPosition(), fragment.getSize());
         double distance = LocalPoint.distance(local, target);
         return distance <= radius;
+    }
+
+    public @Optional Fragment getCloseableAt(@Mandatory Scene scene, @Mandatory GlobalPoint point) {
+        LocalPoint local = coordinateService.globalToLocal(scene.getCamera(), point);
+
+        Fragment closeable = null;
+
+        for (Fragment fragment : scene.getFragments()) {
+            if (fragment.isSelected()) {
+                if (isCloseableAt(fragment, local)) {
+                    closeable = fragment;
+                }
+            }
+        }
+
+        return closeable;
+    }
+
+    private boolean isCloseableAt(@Mandatory Fragment fragment, @Mandatory LocalPoint local) {
+        return isInside(
+            local,
+            fragmentPositionService.getCloseButtonPosition(fragment),
+            fragmentPositionService.getCloseButtonSize(fragment)
+        );
     }
 
     public @Optional Fragment getSelectedAt(@Mandatory Scene scene, @Mandatory GlobalPoint point) {
@@ -134,10 +157,14 @@ public @Service class FragmentSelectionService {
     }
 
     public boolean isInside(@Mandatory LocalPoint point, @Mandatory Fragment fragment) {
-        int fx1 = fragment.getPosition().getX();
-        int fy1 = fragment.getPosition().getY();
-        int fx2 = fragment.getPosition().getX() + fragment.getSize().getX();
-        int fy2 = fragment.getPosition().getY() + fragment.getSize().getY();
+        return isInside(point, fragment.getPosition(), fragment.getSize());
+    }
+
+    public boolean isInside(@Mandatory LocalPoint point, @Mandatory LocalPoint position, @Mandatory LocalVector size) {
+        int fx1 = position.getX();
+        int fy1 = position.getY();
+        int fx2 = position.getX() + size.getX();
+        int fy2 = position.getY() + size.getY();
         int px = point.getX();
         int py = point.getY();
         return px >= fx1 && py >= fy1 && px < fx2 && py < fy2;
