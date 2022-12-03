@@ -24,7 +24,7 @@ public @Utility class CrispWindow extends JFrame {
     private final @Mandatory MainMenu mainMenu;
     private final @Mandatory SplitPanel splitPanel;
     private final @Mandatory ScenePanel scenePanel;
-    private final @Mandatory PropertiesList propertiesList;
+    private final @Mandatory PropertiesPanel propertiesPanel;
 
     public CrispWindow(@Mandatory Metadata metadata) {
         this.metadata = metadata;
@@ -41,12 +41,12 @@ public @Utility class CrispWindow extends JFrame {
         scenePanel.setFragmentSingleSelectListener(this::onFragmentSelected);
         scenePanel.setFragmentOpenListener(this::onFragmentOpened);
 
-        propertiesList = new PropertiesList();
-        propertiesList.setFragmentOpenListener(this::onFragmentOpened);
+        propertiesPanel = new PropertiesPanel();
+        propertiesPanel.setFragmentOpenListener(this::onFragmentOpened);
 
         splitPanel = new SplitPanel();
         splitPanel.setLeftComponent(scenePanel);
-        splitPanel.setRightComponent(new ScrollPanel(propertiesList));
+        splitPanel.setRightComponent(new ScrollPanel(propertiesPanel));
         splitPanel.setDividerLocation(DEFAULT_WIDTH - DEFAULT_PROPERTIES_WIDTH);
 
         getContentPane().add(splitPanel);
@@ -64,12 +64,12 @@ public @Utility class CrispWindow extends JFrame {
         return scenePanel;
     }
 
-    public @Mandatory PropertiesList getPropertiesList() {
-        return propertiesList;
+    public @Mandatory PropertiesPanel getPropertiesPanel() {
+        return propertiesPanel;
     }
 
     private void onFragmentSelected(@Optional Fragment fragment) {
-        propertiesList.setFragment(fragment);
+        propertiesPanel.setFragment(fragment);
     }
 
     private void onFragmentOpened(@Mandatory Fragment parent, @Optional Object object) {

@@ -65,6 +65,10 @@ public @Utility class Panel extends JPanel {
         add(component, components.count(), 0, wx, wy, alignment, fill);
     }
 
+    public void addVertical(@Mandatory Component component, int wx, int wy) {
+        addVertical(component, wx, wy, MIDDLE, BOTH);
+    }
+
     public void addVertical(
         @Mandatory Component component,
         int wx, int wy,
@@ -82,6 +86,7 @@ public @Utility class Panel extends JPanel {
     public void rebuild() {
         removeAll();
         setLayout(new GridBagLayout());
+        if (components.isEmpty()) return;
 
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;

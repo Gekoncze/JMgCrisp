@@ -1,5 +1,4 @@
 properties panel
-    add fragment id
     select field and reference when selected in list
 
 field - reference selection
