@@ -72,12 +72,10 @@ public @Utility class CrispWindow extends JFrame {
         propertiesPanel.setFragment(fragment);
     }
 
-    private void onFragmentOpened(@Mandatory Fragment parent, @Optional Object object) {
-        if (object != null) {
-            if (scenePanel.getScene() != null) {
-                openService.open(metadata, scenePanel.getScene(), parent, object);
-                repaint();
-            }
+    private void onFragmentOpened(@Mandatory Fragment parent, int i) {
+        if (scenePanel.getScene() != null) {
+            openService.open(metadata, scenePanel.getScene(), parent, i);
+            repaint();
         }
     }
 }

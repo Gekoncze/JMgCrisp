@@ -17,5 +17,5 @@ public @Service interface MetadataFactory {
 
     @Mandatory ClassMetadata create(@Mandatory Class clazz);
     @Optional Long getIdentity(@Mandatory Object object);
-    @Optional Object open(@Mandatory Object field);
+    @Optional Object open(@Optional Object field);
 }

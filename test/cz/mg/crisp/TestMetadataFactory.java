@@ -66,14 +66,18 @@ public class TestMetadataFactory implements MetadataFactory {
     }
 
     @Override
-    public @Optional Object open(@Mandatory Object field) {
-        if (field instanceof TestPointer) {
-            TestPointer pointer = (TestPointer) field;
-            return pointer.getTarget();
-        } else if(isCompatible(field.getClass())) {
-            return field;
-        } else {
-            return null;
+    public @Optional Object open(@Optional Object field) {
+        if (field != null) {
+            if (field instanceof TestPointer) {
+                TestPointer pointer = (TestPointer) field;
+                return pointer.getTarget();
+            }
+
+            if (isCompatible(field.getClass())) {
+                return field;
+            }
         }
+
+        return null;
     }
 }

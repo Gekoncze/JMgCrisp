@@ -1,6 +1,10 @@
 properties panel
     select field and reference when selected in list
 
+refresh of data
+    handle refresh of data properly
+    references might change too
+
 field - reference selection
     select reference when field is clicked + select field itself
     select reference when arrow is clicked + select field itself

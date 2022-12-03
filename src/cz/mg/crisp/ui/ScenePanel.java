@@ -203,11 +203,10 @@ public @Utility class ScenePanel extends JPanel {
             Pair<Fragment, Integer> fragmentField = fragmentSelectionService.getFragmentFieldAt(scene, mouse);
             if (fragmentField != null) {
                 if (fragmentOpenListener != null) {
-                    Fragment fragment = fragmentField.getKey();
-                    Object object = fragment.getObject();
-                    Integer index = fragmentField.getValue();
-                    Object field = metadata.get(object).getFields().get(index).getValue(object);
-                    fragmentOpenListener.onFragmentOpened(fragment, field);
+                    fragmentOpenListener.onFragmentOpened(
+                        fragmentField.getKey(),
+                        fragmentField.getValue()
+                    );
                     return true;
                 }
             }

@@ -3,10 +3,11 @@ package cz.mg.crisp.services;
 import cz.mg.annotations.classes.Service;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
+import cz.mg.crisp.entity.metadata.Metadata;
 import cz.mg.crisp.entity.model.Fragment;
 import cz.mg.crisp.entity.model.Reference;
+import cz.mg.crisp.entity.model.Row;
 import cz.mg.crisp.entity.model.Scene;
-import cz.mg.crisp.entity.metadata.Metadata;
 
 import java.util.Objects;
 
@@ -32,7 +33,14 @@ public @Service class OpenService {
     private OpenService() {
     }
 
-    public void open(@Mandatory Metadata metadata, @Mandatory Scene scene, @Mandatory Fragment parent, @Mandatory Object field) {
+    public void open(
+        @Mandatory Metadata metadata,
+        @Mandatory Scene scene,
+        @Mandatory Fragment fragment,
+        int i
+    ) {
+        Row row = fragment.getRows().get(i);
+        Object field = metadata.get(fragment.getObject()).getFields().get(i).getValue(fragment.getObject());
         Object target = metadata.getMetadataFactory().open(field);
         if (target != null) {
             Fragment existingFragment = getFragment(metadata, scene, target);
@@ -40,23 +48,23 @@ public @Service class OpenService {
                 Fragment targetFragment = fragmentFactory.create(metadata, target, false);
                 scene.getFragments().addLast(targetFragment);
 
-                Reference reference = referenceFactory.create(parent, targetFragment);
+                Reference reference = referenceFactory.create(row, fragment, targetFragment);
                 scene.getReferences().addLast(reference);
 
-                targetFragment.setPosition(fragmentPositionService.getNewFragmentPosition(parent));
+                targetFragment.setPosition(fragmentPositionService.getNewFragmentPosition(fragment));
 
                 referencePositionService.computePositionsForSelectedFragmentReferences(
-                    scene, fragment -> fragment == parent || fragment == targetFragment
+                    scene, f -> f == fragment || f == targetFragment
                 );
             } else {
-                Reference existingReference = getReference(scene, parent, existingFragment);
+                Reference existingReference = getReference(scene, fragment, existingFragment);
                 if (existingReference == null) {
-                    if (existingFragment != parent) {
-                        Reference reference = referenceFactory.create(parent, existingFragment);
+                    if (existingFragment != fragment) {
+                        Reference reference = referenceFactory.create(row, fragment, existingFragment);
                         scene.getReferences().addLast(reference);
 
                         referencePositionService.computePositionsForSelectedFragmentReferences(
-                            scene, fragment -> fragment == parent || fragment == existingFragment
+                            scene, f -> f == fragment || f == existingFragment
                         );
                     }
                 }

@@ -43,17 +43,16 @@ public @Utility class PropertiesList extends JList<Row> {
 
     private void rebuild() {
         setModel(new MetadataListModel(fragment));
-        setCellRenderer(new MetadataCellRenderer(fragment));
+        setCellRenderer(new MetadataCellRenderer());
     }
 
     private void onMouseClicked(@Mandatory MouseEvent event) {
         if (event.getClickCount() == 2) {
             int index = locationToIndex(event.getPoint());
             if (index >= 0 && index < getModel().getSize()) {
-                Object field = getModel().getElementAt(index);
                 if (fragmentOpenListener != null) {
                     if (fragment != null) {
-                        fragmentOpenListener.onFragmentOpened(fragment, field);
+                        fragmentOpenListener.onFragmentOpened(fragment, index);
                     }
                 }
             }
@@ -95,10 +94,7 @@ public @Utility class PropertiesList extends JList<Row> {
     }
 
     private static class MetadataCellRenderer implements ListCellRenderer<Row> {
-        private final @Optional Fragment fragment;
-
-        public MetadataCellRenderer(@Optional Fragment fragment) {
-            this.fragment = fragment;
+        public MetadataCellRenderer() {
         }
 
         @Override

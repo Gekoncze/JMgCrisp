@@ -4,6 +4,7 @@ import cz.mg.annotations.classes.Service;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
 import cz.mg.crisp.entity.model.Fragment;
+import cz.mg.crisp.entity.model.Row;
 import cz.mg.crisp.entity.model.math.LocalPoint;
 import cz.mg.crisp.entity.model.Reference;
 
@@ -22,14 +23,15 @@ public @Service class ReferenceFactory {
     private ReferenceFactory() {
     }
 
-    public @Mandatory Reference create(@Mandatory Fragment source, @Mandatory Fragment target) {
+    public @Mandatory Reference create(@Mandatory Row row, @Mandatory Fragment source, @Mandatory Fragment target) {
         if (source == target) {
-            throw new IllegalArgumentException(
+            throw new UnsupportedOperationException(
                 "Reference source fragment cannot be the same object as target fragment."
             );
         }
 
         Reference reference = new Reference();
+        reference.setRow(row);
         reference.setSource(source);
         reference.setTarget(target);
         reference.setBegin(new LocalPoint(DEFAULT_REFERENCE_POSITION));

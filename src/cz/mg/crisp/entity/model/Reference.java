@@ -8,6 +8,7 @@ import cz.mg.annotations.storage.Value;
 import cz.mg.crisp.entity.model.math.LocalPoint;
 
 public @Entity class Reference {
+    private Row row;
     private Fragment source;
     private Fragment target;
     private LocalPoint begin;
@@ -15,6 +16,15 @@ public @Entity class Reference {
     private Boolean selected;
 
     public Reference() {
+    }
+
+    @Required @Link
+    public Row getRow() {
+        return row;
+    }
+
+    public void setRow(Row row) {
+        this.row = row;
     }
 
     @Required @Link
