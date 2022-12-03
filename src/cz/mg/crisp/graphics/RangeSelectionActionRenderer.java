@@ -4,12 +4,11 @@ import cz.mg.annotations.classes.Service;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
 import cz.mg.crisp.actions.RangeSelectionAction;
-import cz.mg.crisp.entity.Camera;
-import cz.mg.crisp.entity.GlobalPoint;
+import cz.mg.crisp.entity.model.Camera;
+import cz.mg.crisp.entity.model.math.GlobalPoint;
 import cz.mg.crisp.services.CoordinateService;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 
 public @Service class RangeSelectionActionRenderer {
     private static final Stroke STROKE = new BasicStroke(

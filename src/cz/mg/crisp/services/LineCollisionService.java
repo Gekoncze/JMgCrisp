@@ -3,9 +3,9 @@ package cz.mg.crisp.services;
 import cz.mg.annotations.classes.Service;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
-import cz.mg.crisp.entity.Line;
-import cz.mg.crisp.entity.LocalPoint;
-import cz.mg.crisp.entity.LocalVector;
+import cz.mg.crisp.entity.model.math.Line;
+import cz.mg.crisp.entity.model.math.LocalPoint;
+import cz.mg.crisp.entity.model.math.LocalVector;
 
 public @Service class LineCollisionService {
     private static @Optional LineCollisionService instance;

@@ -3,8 +3,8 @@ package cz.mg.crisp.services;
 import cz.mg.annotations.classes.Service;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
-import cz.mg.crisp.entity.Fragment;
-import cz.mg.crisp.entity.Scene;
+import cz.mg.crisp.entity.model.Fragment;
+import cz.mg.crisp.entity.model.Scene;
 
 public @Service class CloseService {
     private static @Optional CloseService instance;

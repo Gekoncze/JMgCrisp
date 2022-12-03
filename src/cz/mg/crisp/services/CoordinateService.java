@@ -3,7 +3,11 @@ package cz.mg.crisp.services;
 import cz.mg.annotations.classes.Service;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
-import cz.mg.crisp.entity.*;
+import cz.mg.crisp.entity.model.math.GlobalPoint;
+import cz.mg.crisp.entity.model.math.GlobalVector;
+import cz.mg.crisp.entity.model.math.LocalPoint;
+import cz.mg.crisp.entity.model.math.LocalVector;
+import cz.mg.crisp.entity.model.Camera;
 
 import java.awt.*;
 

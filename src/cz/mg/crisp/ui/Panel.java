@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 
 import static cz.mg.crisp.ui.Panel.Alignment.MIDDLE;
+import static cz.mg.crisp.ui.Panel.Alignment.TOP_LEFT;
 import static cz.mg.crisp.ui.Panel.Fill.BOTH;
 
 
@@ -17,6 +18,10 @@ public @Utility class Panel extends JPanel {
     private final @Mandatory HorizontalAlignment horizontalAlignment;
     private final @Mandatory VerticalAlignment verticalAlignment;
     private final @Mandatory List<ComponentSettings> components = new List<>();
+
+    public Panel(int border, int padding) {
+        this(border, padding, TOP_LEFT);
+    }
 
     public Panel(int border, int padding, @Mandatory Alignment alignment) {
         this.border = border;

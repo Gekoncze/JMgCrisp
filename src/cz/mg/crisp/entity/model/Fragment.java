@@ -1,4 +1,4 @@
-package cz.mg.crisp.entity;
+package cz.mg.crisp.entity.model;
 
 import cz.mg.annotations.classes.Entity;
 import cz.mg.annotations.requirement.Required;
@@ -7,6 +7,8 @@ import cz.mg.annotations.storage.Link;
 import cz.mg.annotations.storage.Part;
 import cz.mg.annotations.storage.Value;
 import cz.mg.collections.list.List;
+import cz.mg.crisp.entity.model.math.LocalPoint;
+import cz.mg.crisp.entity.model.math.LocalVector;
 
 public @Entity class Fragment {
     private Object object;
@@ -15,7 +17,7 @@ public @Entity class Fragment {
     private Boolean selected;
     private Boolean mandatory;
     private String header;
-    private List<String> rows;
+    private List<Row> rows;
 
     public Fragment() {
     }
@@ -79,11 +81,11 @@ public @Entity class Fragment {
     }
 
     @Required @Cache
-    public List<String> getRows() {
+    public List<Row> getRows() {
         return rows;
     }
 
-    public void setRows(List<String> rows) {
+    public void setRows(List<Row> rows) {
         this.rows = rows;
     }
 }

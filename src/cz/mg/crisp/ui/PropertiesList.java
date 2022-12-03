@@ -3,26 +3,23 @@ package cz.mg.crisp.ui;
 import cz.mg.annotations.classes.Utility;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
-import cz.mg.crisp.entity.Fragment;
-import cz.mg.crisp.entity.metadata.Metadata;
+import cz.mg.crisp.entity.model.Fragment;
+import cz.mg.crisp.entity.model.Row;
 import cz.mg.crisp.event.UserMouseClickedListener;
 import cz.mg.crisp.listeners.FragmentOpenListener;
-import cz.mg.crisp.services.DataReader;
 
 import javax.swing.*;
 import javax.swing.event.ListDataListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
-public @Utility class PropertiesList extends JList<Object> {
+public @Utility class PropertiesList extends JList<Row> {
     private static final Color SELECTION_COLOR = UIManager.getDefaults().getColor("List.selectionBackground");
 
-    private final @Mandatory Metadata metadata;
     private @Optional Fragment fragment;
     private @Optional FragmentOpenListener fragmentOpenListener;
 
-    public PropertiesList(@Mandatory Metadata metadata) {
-        this.metadata = metadata;
+    public PropertiesList() {
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         addMouseListener(new UserMouseClickedListener(this::onMouseClicked));
     }
@@ -45,9 +42,8 @@ public @Utility class PropertiesList extends JList<Object> {
     }
 
     private void rebuild() {
-        Object object = fragment != null ? fragment.getObject() : null;
-        setModel(new MetadataListModel(metadata, object));
-        setCellRenderer(new MetadataCellRenderer(metadata, object));
+        setModel(new MetadataListModel(fragment));
+        setCellRenderer(new MetadataCellRenderer(fragment));
     }
 
     private void onMouseClicked(@Mandatory MouseEvent event) {
@@ -64,28 +60,26 @@ public @Utility class PropertiesList extends JList<Object> {
         }
     }
 
-    private static class MetadataListModel implements ListModel<Object> {
-        private final @Mandatory Metadata metadata;
-        private final @Optional Object object;
+    private static class MetadataListModel implements ListModel<Row> {
+        private final @Optional Fragment fragment;
 
-        public MetadataListModel(@Mandatory Metadata metadata, @Optional Object object) {
-            this.metadata = metadata;
-            this.object = object;
+        public MetadataListModel(@Optional Fragment fragment) {
+            this.fragment = fragment;
         }
 
         @Override
         public int getSize() {
-            if (object != null) {
-                return metadata.get(object).getFields().count();
+            if (fragment != null) {
+                return fragment.getRows().count();
             } else {
                 return 0;
             }
         }
 
         @Override
-        public Object getElementAt(int i) {
-            if (object != null) {
-                return metadata.get(object).getFields().get(i).getValue(object);
+        public Row getElementAt(int i) {
+            if (fragment != null) {
+                return fragment.getRows().get(i);
             } else {
                 return null;
             }
@@ -100,27 +94,24 @@ public @Utility class PropertiesList extends JList<Object> {
         }
     }
 
-    private static class MetadataCellRenderer implements ListCellRenderer<Object> {
-        private final @Mandatory DataReader dataReader = DataReader.getInstance();
-        private final @Mandatory Metadata metadata;
-        private final @Optional Object object;
+    private static class MetadataCellRenderer implements ListCellRenderer<Row> {
+        private final @Optional Fragment fragment;
 
-        public MetadataCellRenderer(@Mandatory Metadata metadata, @Optional Object object) {
-            this.metadata = metadata;
-            this.object = object;
+        public MetadataCellRenderer(@Optional Fragment fragment) {
+            this.fragment = fragment;
         }
 
         @Override
         public @Mandatory Component getListCellRendererComponent(
-            @Mandatory JList<?> list,
-            @Optional Object fieldValue,
+            @Mandatory JList<? extends Row> list,
+            @Optional Row row,
             int i,
             boolean selected,
             boolean focused
         ) {
-            if (object != null) {
+            if (row != null) {
                 JLabel label = new JLabel();
-                label.setText(dataReader.getRow(metadata, object, fieldValue, i));
+                label.setText(row.getName() + ": " + row.getValue());
                 label.setOpaque(selected);
                 label.setBackground(selected ? SELECTION_COLOR : Color.WHITE);
                 return label;

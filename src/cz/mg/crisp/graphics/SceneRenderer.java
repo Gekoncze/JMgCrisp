@@ -3,10 +3,10 @@ package cz.mg.crisp.graphics;
 import cz.mg.annotations.classes.Service;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
-import cz.mg.crisp.entity.Camera;
-import cz.mg.crisp.entity.Fragment;
-import cz.mg.crisp.entity.Reference;
-import cz.mg.crisp.entity.Scene;
+import cz.mg.crisp.entity.model.Camera;
+import cz.mg.crisp.entity.model.Fragment;
+import cz.mg.crisp.entity.model.Reference;
+import cz.mg.crisp.entity.model.Scene;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;

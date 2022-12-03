@@ -8,7 +8,12 @@ import cz.mg.collections.array.Array;
 import cz.mg.collections.list.List;
 import cz.mg.collections.map.Map;
 import cz.mg.collections.pair.ReadablePair;
-import cz.mg.crisp.entity.*;
+import cz.mg.crisp.entity.model.math.Line;
+import cz.mg.crisp.entity.model.math.LocalPoint;
+import cz.mg.crisp.entity.model.math.Rectangle;
+import cz.mg.crisp.entity.model.Fragment;
+import cz.mg.crisp.entity.model.Reference;
+import cz.mg.crisp.entity.model.Scene;
 
 public @Service class ReferencePositionService {
     private static final int CACHE = 100;

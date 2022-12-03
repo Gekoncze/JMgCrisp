@@ -4,7 +4,7 @@ import cz.mg.annotations.classes.Utility;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
 import cz.mg.crisp.Version;
-import cz.mg.crisp.entity.Fragment;
+import cz.mg.crisp.entity.model.Fragment;
 import cz.mg.crisp.entity.metadata.Metadata;
 import cz.mg.crisp.services.OpenService;
 
@@ -41,7 +41,7 @@ public @Utility class CrispWindow extends JFrame {
         scenePanel.setFragmentSingleSelectListener(this::onFragmentSelected);
         scenePanel.setFragmentOpenListener(this::onFragmentOpened);
 
-        propertiesList = new PropertiesList(metadata);
+        propertiesList = new PropertiesList();
         propertiesList.setFragmentOpenListener(this::onFragmentOpened);
 
         splitPanel = new SplitPanel();

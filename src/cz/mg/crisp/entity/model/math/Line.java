@@ -1,4 +1,4 @@
-package cz.mg.crisp.entity;
+package cz.mg.crisp.entity.model.math;
 
 import cz.mg.annotations.classes.Entity;
 import cz.mg.annotations.requirement.Required;

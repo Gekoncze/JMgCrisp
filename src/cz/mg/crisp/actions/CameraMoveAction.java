@@ -2,7 +2,11 @@ package cz.mg.crisp.actions;
 
 import cz.mg.annotations.classes.Utility;
 import cz.mg.annotations.requirement.Mandatory;
-import cz.mg.crisp.entity.*;
+import cz.mg.crisp.entity.model.math.GlobalPoint;
+import cz.mg.crisp.entity.model.math.GlobalVector;
+import cz.mg.crisp.entity.model.math.LocalPoint;
+import cz.mg.crisp.entity.model.math.LocalVector;
+import cz.mg.crisp.entity.model.Camera;
 import cz.mg.crisp.services.CoordinateService;
 
 public @Utility class CameraMoveAction implements Action {

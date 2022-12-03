@@ -3,7 +3,8 @@ package cz.mg.crisp.graphics;
 import cz.mg.annotations.classes.Service;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
-import cz.mg.crisp.entity.Fragment;
+import cz.mg.crisp.entity.model.Fragment;
+import cz.mg.crisp.entity.model.Row;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -74,9 +75,9 @@ public @Service class FragmentRenderer {
         int y = 0;
         drawString(g, fragment.getHeader(), PADDING, y + SECTION_PADDING);
 
-        for (String row : fragment.getRows()) {
+        for (Row row : fragment.getRows()) {
             y += SECTION_SIZE;
-            drawString(g, row, PADDING, y + SECTION_PADDING);
+            drawString(g, row.getName() + ": " + row.getValue(), PADDING, y + SECTION_PADDING);
         }
     }
 

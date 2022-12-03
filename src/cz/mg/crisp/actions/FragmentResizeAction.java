@@ -4,7 +4,11 @@ import cz.mg.annotations.classes.Utility;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.collections.map.Map;
 import cz.mg.collections.pair.ReadablePair;
-import cz.mg.crisp.entity.*;
+import cz.mg.crisp.entity.model.math.GlobalPoint;
+import cz.mg.crisp.entity.model.math.GlobalVector;
+import cz.mg.crisp.entity.model.math.LocalVector;
+import cz.mg.crisp.entity.model.Fragment;
+import cz.mg.crisp.entity.model.Scene;
 import cz.mg.crisp.services.CoordinateService;
 import cz.mg.crisp.services.ReferencePositionService;
 

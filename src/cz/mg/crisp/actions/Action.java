@@ -2,7 +2,7 @@ package cz.mg.crisp.actions;
 
 import cz.mg.annotations.classes.Utility;
 import cz.mg.annotations.requirement.Mandatory;
-import cz.mg.crisp.entity.GlobalPoint;
+import cz.mg.crisp.entity.model.math.GlobalPoint;
 
 import java.awt.*;
 

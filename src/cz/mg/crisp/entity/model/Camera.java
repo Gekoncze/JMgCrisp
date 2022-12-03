@@ -1,9 +1,10 @@
-package cz.mg.crisp.entity;
+package cz.mg.crisp.entity.model;
 
 import cz.mg.annotations.classes.Entity;
 import cz.mg.annotations.requirement.Required;
 import cz.mg.annotations.storage.Part;
 import cz.mg.annotations.storage.Value;
+import cz.mg.crisp.entity.model.math.LocalPoint;
 
 public @Entity class Camera {
     private LocalPoint position = new LocalPoint();

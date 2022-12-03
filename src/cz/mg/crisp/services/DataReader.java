@@ -7,6 +7,7 @@ import cz.mg.collections.list.List;
 import cz.mg.crisp.entity.metadata.ClassMetadata;
 import cz.mg.crisp.entity.metadata.FieldMetadata;
 import cz.mg.crisp.entity.metadata.Metadata;
+import cz.mg.crisp.entity.model.Row;
 
 public @Service class DataReader {
     private static @Optional DataReader instance;
@@ -27,33 +28,17 @@ public @Service class DataReader {
         return name + " " + identity;
     }
 
-    public @Mandatory List<String> getRows(@Mandatory Metadata metadata, @Mandatory Object object) {
-        List<String> rows = new List<>();
+    public @Mandatory List<Row> getRows(@Mandatory Metadata metadata, @Mandatory Object object) {
+        List<Row> rows = new List<>();
         if (metadata.getMetadataFactory().isCompatible(object.getClass())) {
             ClassMetadata classMetadata = metadata.get(object);
             for (FieldMetadata fieldMetadata : classMetadata.getFields()) {
-                rows.addLast(getRow(metadata, fieldMetadata.getName(), fieldMetadata.getValue(object)));
+                String name = fieldMetadata.getName();
+                String value = valueToString(metadata, fieldMetadata.getValue(object));
+                rows.addLast(new Row(name, value));
             }
         }
         return rows;
-    }
-
-    public @Mandatory String getRow(
-        @Mandatory Metadata metadata,
-        @Mandatory Object object,
-        @Optional Object fieldValue,
-        int i
-    ) {
-        return getRow(metadata, metadata.get(object).getFields().get(i).getName(), fieldValue);
-    }
-
-    private @Mandatory String getRow(
-        @Mandatory Metadata metadata,
-        @Mandatory String name,
-        @Optional Object fieldValue
-    ) {
-        String stringValue = valueToString(metadata, fieldValue);
-        return name + ": " + stringValue;
     }
 
     private @Mandatory String getName(@Mandatory Metadata metadata, @Mandatory Object object) {

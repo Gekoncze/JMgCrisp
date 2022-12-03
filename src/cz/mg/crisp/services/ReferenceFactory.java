@@ -3,9 +3,9 @@ package cz.mg.crisp.services;
 import cz.mg.annotations.classes.Service;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
-import cz.mg.crisp.entity.Fragment;
-import cz.mg.crisp.entity.LocalPoint;
-import cz.mg.crisp.entity.Reference;
+import cz.mg.crisp.entity.model.Fragment;
+import cz.mg.crisp.entity.model.math.LocalPoint;
+import cz.mg.crisp.entity.model.Reference;
 
 public @Service class ReferenceFactory {
     private static final @Mandatory LocalPoint DEFAULT_REFERENCE_POSITION = new LocalPoint();
