@@ -41,7 +41,6 @@ public @Utility class ScenePanel extends JPanel {
     private final @Mandatory CoordinateService coordinateService = CoordinateService.getInstance();
     private final @Mandatory FragmentSelectionService fragmentSelectionService = FragmentSelectionService.getInstance();
     private final @Mandatory ZoomService zoomService = ZoomService.getInstance();
-    private final @Mandatory DataReader dataReader = DataReader.getInstance();
     private final @Mandatory ReferencePositionService referencePositionService = ReferencePositionService.getInstance();
     private final @Mandatory CloseService closeService = CloseService.getInstance();
 
