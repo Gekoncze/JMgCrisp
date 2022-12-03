@@ -37,7 +37,7 @@ public @Utility class CrispWindow extends JFrame {
         mainMenu = new MainMenu(this);
         setJMenuBar(mainMenu);
 
-        scenePanel = new ScenePanel(metadata);
+        scenePanel = new ScenePanel();
         scenePanel.setFragmentSingleSelectListener(this::onFragmentSelected);
         scenePanel.setFragmentOpenListener(this::onFragmentOpened);
 

@@ -10,7 +10,6 @@ import cz.mg.crisp.entity.model.Fragment;
 import cz.mg.crisp.entity.model.math.GlobalPoint;
 import cz.mg.crisp.entity.model.Reference;
 import cz.mg.crisp.entity.model.Scene;
-import cz.mg.crisp.entity.metadata.Metadata;
 import cz.mg.crisp.event.*;
 import cz.mg.crisp.graphics.SceneRenderer;
 import cz.mg.crisp.graphics.SceneRenderingHints;
@@ -46,7 +45,6 @@ public @Utility class ScenePanel extends JPanel {
     private final @Mandatory ReferencePositionService referencePositionService = ReferencePositionService.getInstance();
     private final @Mandatory CloseService closeService = CloseService.getInstance();
 
-    private final @Mandatory Metadata metadata;
     private final @Mandatory Timer timer = new Timer(DEFAULT_DELAY);
 
     private @Optional Scene scene;
@@ -55,8 +53,7 @@ public @Utility class ScenePanel extends JPanel {
     private @Optional FragmentSelectListener fragmentSelectListener;
     private @Optional FragmentOpenListener fragmentOpenListener;
 
-    public ScenePanel(@Mandatory Metadata metadata) {
-        this.metadata = metadata;
+    public ScenePanel() {
         setFocusable(true);
         addMouseListener(new UserMousePressedListener(this::onMousePressed));
         addMouseListener(new UserMouseReleasedListener(this::onMouseReleased));
@@ -74,7 +71,6 @@ public @Utility class ScenePanel extends JPanel {
 
     public void setScene(@Optional Scene scene) {
         this.scene = scene;
-        refreshFragmentData();
         refreshReferencePositions();
         cancel();
     }
@@ -98,16 +94,6 @@ public @Utility class ScenePanel extends JPanel {
     public void cancel() {
         action = null;
         clearSelection();
-        repaint();
-    }
-
-    private void refreshFragmentData() {
-        if (scene != null) {
-            for (Fragment fragment : scene.getFragments()) {
-                fragment.setHeader(dataReader.getHeader(metadata, fragment.getObject()));
-                fragment.setRows(dataReader.getRows(metadata, fragment.getObject()));
-            }
-        }
         repaint();
     }
 
