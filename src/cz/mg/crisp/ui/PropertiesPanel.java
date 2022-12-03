@@ -5,6 +5,7 @@ import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
 import cz.mg.crisp.entity.model.Fragment;
 import cz.mg.crisp.listeners.FragmentOpenListener;
+import cz.mg.crisp.listeners.FragmentRowSelectListener;
 
 import javax.swing.*;
 
@@ -41,5 +42,13 @@ public @Utility class PropertiesPanel extends Panel {
 
     public void setFragmentOpenListener(@Optional FragmentOpenListener fragmentOpenListener) {
         propertiesList.setFragmentOpenListener(fragmentOpenListener);
+    }
+
+    public @Optional FragmentRowSelectListener getFragmentRowSelectListener() {
+        return propertiesList.getFragmentRowSelectListener();
+    }
+
+    public void setFragmentRowSelectListener(@Optional FragmentRowSelectListener fragmentRowSelectListener) {
+        propertiesList.setFragmentRowSelectListener(fragmentRowSelectListener);
     }
 }

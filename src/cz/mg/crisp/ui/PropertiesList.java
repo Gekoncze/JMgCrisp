@@ -4,12 +4,16 @@ import cz.mg.annotations.classes.Utility;
 import cz.mg.annotations.requirement.Mandatory;
 import cz.mg.annotations.requirement.Optional;
 import cz.mg.crisp.entity.model.Fragment;
+import cz.mg.crisp.entity.model.Reference;
 import cz.mg.crisp.entity.model.Row;
+import cz.mg.crisp.event.UserListSelectionListener;
 import cz.mg.crisp.event.UserMouseClickedListener;
 import cz.mg.crisp.listeners.FragmentOpenListener;
+import cz.mg.crisp.listeners.FragmentRowSelectListener;
 
 import javax.swing.*;
 import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
@@ -18,10 +22,12 @@ public @Utility class PropertiesList extends JList<Row> {
 
     private @Optional Fragment fragment;
     private @Optional FragmentOpenListener fragmentOpenListener;
+    private @Optional FragmentRowSelectListener fragmentRowSelectListener;
 
     public PropertiesList() {
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         addMouseListener(new UserMouseClickedListener(this::onMouseClicked));
+        addListSelectionListener(new UserListSelectionListener(this::onItemSelected));
     }
 
     public @Optional Fragment getFragment() {
@@ -41,6 +47,14 @@ public @Utility class PropertiesList extends JList<Row> {
         this.fragmentOpenListener = fragmentOpenListener;
     }
 
+    public @Optional FragmentRowSelectListener getFragmentRowSelectListener() {
+        return fragmentRowSelectListener;
+    }
+
+    public void setFragmentRowSelectListener(@Optional FragmentRowSelectListener fragmentRowSelectListener) {
+        this.fragmentRowSelectListener = fragmentRowSelectListener;
+    }
+
     private void rebuild() {
         setModel(new MetadataListModel(fragment));
         setCellRenderer(new MetadataCellRenderer());
@@ -55,6 +69,14 @@ public @Utility class PropertiesList extends JList<Row> {
                         fragmentOpenListener.onFragmentOpened(fragment, index);
                     }
                 }
+            }
+        }
+    }
+
+    private void onItemSelected(@Mandatory ListSelectionEvent event) {
+        if (event.getFirstIndex() >= 0) {
+            if (fragmentRowSelectListener != null) {
+                fragmentRowSelectListener.onFragmentRowSelected(fragment, event.getFirstIndex());
             }
         }
     }
